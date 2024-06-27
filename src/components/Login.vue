@@ -10,8 +10,12 @@
       <div class="form-wrapper">
         <div class="form-header">
           <v-btn-toggle v-model="isLogin" class="toggle-buttons" mandatory>
-            <v-btn class="toggle-button" :class="{ active: isLogin }" @click="isLogin = true">LOGIN</v-btn>
-            <v-btn class="toggle-button" :class="{ active: !isLogin }" @click="isLogin = false">SIGNUP</v-btn>
+            <v-btn class="toggle-button" :class="{ active: isLogin }" @click="isLogin = true"
+              >LOGIN</v-btn
+            >
+            <v-btn class="toggle-button" :class="{ active: !isLogin }" @click="isLogin = false"
+              >SIGNUP</v-btn
+            >
           </v-btn-toggle>
         </div>
         <v-form @submit.prevent="handleSubmit">
@@ -44,7 +48,14 @@
           </div>
 
           <div>
-            <v-btn @click="handleSubmit" class="u-btn" color="#A03037" size="large" variant="elevated" block>
+            <v-btn
+              @click="handleSubmit"
+              class="u-btn"
+              color="#A03037"
+              size="large"
+              variant="elevated"
+              block
+            >
               {{ isLogin ? 'Login' : 'Signup' }}
             </v-btn>
           </div>
@@ -66,47 +77,58 @@
 </template>
 
 <script lang="ts">
-import { defineComponent } from "vue";
+import { defineComponent } from 'vue'
 
 export default defineComponent({
-  name: "LoginPage",
+  name: 'LoginPage',
   data() {
     return {
       isLogin: true,
-      email: "",
-      password: "",
-      visible: false,
-    };
+      email: '',
+      password: '',
+      visible: false
+    }
   },
   methods: {
     handleSubmit() {
       if (this.isLogin) {
-        console.log("Login - Email:", this.email);
-        console.log("Login - Password:", this.password);
+        console.log('Login - Email:', this.email)
+        console.log('Login - Password:', this.password)
       } else {
-        console.log("Signup - Email:", this.email);
-        console.log("Signup - Password:", this.password);
+        console.log('Signup - Email:', this.email)
+        console.log('Signup - Password:', this.password)
       }
-    },
-  },
-});
+    }
+  }
+})
 </script>
 
 <style scoped>
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html, body {
+  height: 100%;
+  width: 100%;
+  overflow: hidden;
+}
 .login-page {
   display: flex;
   justify-content: center;
   align-items: center;
   height: 100vh;
-background-color: #f0f0f0;
-  width:100vw;
-  border: 1px solid black;
-  
+  background-color: #f0f0f0;
+  width: 100vw;
+  overflow-y: hidden;
 }
 
 .left-section,
 .right-section {
   position: relative;
+  
 }
 
 .left-section .content-wrapper {
@@ -127,7 +149,7 @@ background-color: #f0f0f0;
   display: flex;
   justify-content: center;
   align-items: center;
-  width:30%;
+  width: 30%;
 }
 
 .right-section .form-wrapper {
@@ -138,8 +160,8 @@ background-color: #f0f0f0;
   padding: 40px;
   border-radius: 8px;
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-  width:100%;
-  height:550px;
+  width: 100%;
+  height: 550px;
 }
 
 .form-header {
@@ -156,16 +178,14 @@ background-color: #f0f0f0;
   width: 50%;
   font-size: 30px;
   font-weight: bold;
-  
 }
 
-
-  .toggle-button.active {
-    text-decoration: underline;
-    text-decoration-color: red;
-    text-decoration-thickness:5px ;  
-    color:#000000;  
-  }
+.toggle-button.active {
+  text-decoration: underline;
+  text-decoration-color: red;
+  text-decoration-thickness: 5px;
+  color: #000000;
+}
 
 .u-title,
 .u-title-pass {
@@ -180,14 +200,14 @@ background-color: #f0f0f0;
 .u-forgetpass {
   display: block;
   text-align: right;
-  color:#a0a0a0;
+  color: #a0a0a0;
 }
 
 .or-container {
   margin: 24px 0;
   display: flex;
   justify-content: center;
-  align-items: center
+  align-items: center;
 }
 
 .or-line {
@@ -206,11 +226,34 @@ background-color: #f0f0f0;
 }
 
 .u-btn {
-  background-color: #A03037;
+  background-color: #a03037;
   color: white;
 }
 
 .u-s-btn {
   width: 48%;
+}
+
+@media (max-width: 768px) {
+  .login-page {
+    flex-direction: column;
+  }
+
+  .left-section,
+  .right-section {
+    flex: none;
+    width: 100%;
+  }
+
+  .left-section .content-wrapper,
+  .right-section .form-wrapper {
+    width: calc(100% - 40px);
+    margin: 20px;
+  }
+
+  .toggle-button {
+    font-size: 14px;
+    padding: 8px;
+  }
 }
 </style>
