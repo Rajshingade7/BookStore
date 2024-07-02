@@ -120,7 +120,7 @@
           </div>
           <div class="ml-3 mt-2">
             <span
-              ><strong>{{ feedback.name }}</strong></span
+              ><strong>{{ feedback.user_id.fullName }}</strong></span
             >
             <div>
               <v-rating
@@ -145,7 +145,7 @@ import { defineComponent, ref, onMounted } from "vue";
 import { useRoute } from "vue-router";
 import Headercomponent from "./Header.vue";
 import { useBookStore } from "../stores/bookStore";
-
+import { getFeedback } from "../Services/Book.service";
 interface Feedback {
   id: string;
   name: string;
@@ -169,28 +169,21 @@ export default defineComponent({
     const route = useRoute();
     const bookStore = useBookStore();
     const book = ref(null);
-
+    const feedbacks = ref<Feedback[]>([]);
     onMounted(async () => {
       const bookId = route.params.id as string;
       await bookStore.fetchBooks();
       book.value = bookStore.books.find((b) => b._id === bookId);
+      if (book.value) {
+        try {
+          const feedbackData = await getFeedback(bookId);
+          console.log(feedbackData);
+          feedbacks.value = feedbackData.data.result;
+        } catch (error) {
+          console.error("Error fetching feedback:", error);
+        }
+      }
     });
-    const feedbacks = ref<Feedback[]>([
-      {
-        id: "1",
-        name: "Aniket Chile",
-        initials: "AC",
-        rating: 4,
-        comment: "Good product. Even though the translation could have been better...",
-      },
-      {
-        id: "2",
-        name: "Shweta Bodkar",
-        initials: "SB",
-        rating: 4,
-        comment: "Good product. Even though the translation could have been better...",
-      },
-    ]);
 
     const addToBag = () => {
       console.log("Add to Bag clicked");
