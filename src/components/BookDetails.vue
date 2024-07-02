@@ -13,10 +13,10 @@
         </div>
       </div>
 
-      <div>
+      <div v-if="book">
         <div class="u-book-b">
           <div class="big-image">
-            <img height="80%" width="80%" :src="book.image" alt="" />
+            <img height="80%" width="80%" src="../../public/Image 11@2x.png" alt="" />
             <!-- <div class="u-box-out-b position-absolute d-flex align-center justify-center">
                 <span><strong>OUT OF STOCK</strong></span>
               </div> -->
@@ -43,10 +43,10 @@
         </div>
       </div>
 
-      <div class="pl-md-10 pl-sm-5 pl-xs-5">
+      <div class="pl-md-10 pl-sm-5 pl-xs-5" v-if="book">
         <div class="d-flex flex-column">
           <span style="font-size: 1.5em"
-            ><strong>{{ book.title }}</strong></span
+            ><strong>{{ book.bookName }}</strong></span
           ><br />
           <span class="u-smalltext-b">by {{ book.author }}</span>
           <div class="d-flex align-center">
@@ -54,11 +54,15 @@
               <span class="u-c-rating-b">4.5</span>
               <v-icon class="u-c-rating-b">mdi-star</v-icon>
             </div>
-            <span class="u-smalltext-b pt-3 pl-3">(20)</span>
+            <span class="u-smalltext-b pt-3 pl-3">({{ book.quantity }})</span>
           </div>
           <div class="d-flex align-center mb-4">
-            <span style="font-size: 1.5em"><strong>Rs. 1500</strong></span>
-            <span class="u-smalltext-b pl-3"><strike>Rs. 2000</strike></span>
+            <span style="font-size: 1.5em"
+              ><strong>{{ book.discountPrice }}</strong></span
+            >
+            <span class="u-smalltext-b pl-3"
+              ><strike>{{ book.price }}</strike></span
+            >
           </div>
         </div>
         <v-divider></v-divider>
@@ -137,16 +141,10 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, ref } from "vue";
+import { defineComponent, ref, onMounted } from "vue";
 import { useRoute } from "vue-router";
 import Headercomponent from "./Header.vue";
-
-interface Book {
-  id: string;
-  image: string;
-  title: string;
-  author: string;
-}
+import { useBookStore } from "../stores/bookStore";
 
 interface Feedback {
   id: string;
@@ -169,14 +167,14 @@ export default defineComponent({
   },
   setup() {
     const route = useRoute();
+    const bookStore = useBookStore();
+    const book = ref(null);
 
-    const book = ref<Book>({
-      id: route.params.id as string,
-      image: "../../public/image 11@2x.png", // replace with actual image path
-      title: "Don't Make Me Think",
-      author: "Steve Krug",
+    onMounted(async () => {
+      const bookId = route.params.id as string;
+      await bookStore.fetchBooks();
+      book.value = bookStore.books.find((b) => b._id === bookId);
     });
-
     const feedbacks = ref<Feedback[]>([
       {
         id: "1",

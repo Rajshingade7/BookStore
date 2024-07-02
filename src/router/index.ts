@@ -3,6 +3,7 @@ import Login from '../views/LoginView.vue'
 import Signup from '../views/SignupView.vue'
 import Dashboard from '../views/DashboardView.vue'
 import BookDetails from '../views/BookDetailsView.vue'
+import { useBookStore } from '@/stores/bookStore'
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
   routes: [
@@ -20,6 +21,13 @@ const router = createRouter({
       path:'/dashboard',
       name:'dashboard',
       component: Dashboard,
+      beforeEnter: async (to, from, next) => {
+        const bookStore = useBookStore();
+        if (!bookStore.books.length) {
+          await bookStore.fetchBooks();
+        }
+        next();
+      }
     },
     {
       path: '/dashboard/book/:id',

@@ -22,10 +22,13 @@
 import { defineComponent, PropType } from "vue";
 
 interface Book {
-  id: string;
+  _id: string;
   image: string;
   title: string;
   author: string;
+  quantity: number;
+  discountPrice: number;
+  price: number;
 }
 
 export default defineComponent({

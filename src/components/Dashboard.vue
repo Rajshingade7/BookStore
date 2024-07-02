@@ -1,5 +1,5 @@
 <script lang="ts">
-import { defineComponent, onMounted, ref } from "vue";
+import { defineComponent, computed, ref } from "vue";
 import HeaderComponent from "./Header.vue";
 import FooterComponent from "./Footer.vue";
 import BookCard from "./BookCard.vue";
@@ -12,50 +12,68 @@ export default defineComponent({
     FooterComponent,
     BookCard,
   },
-  beforeCreate() {
-    console.log("beforeCreate");
-  },
+
   setup() {
     const router = useRouter();
     const bookStore = useBookStore();
-    const loading = ref(true);
+    const loading = ref(false);
+    const searchQuery = ref("");
+    const sortOption = ref("default");
 
-    onMounted(async () => {
-      try {
-        await bookStore.fetchBooks();
-        console.log("Books fetched:", bookStore.books.length);
+    const filteredBooks = computed(() => {
+      let books = bookStore.books;
 
-        loading.value = false;
-      } catch (error) {
-        console.error("Error fetching books:", error);
-        loading.value = false;
+      if (searchQuery.value) {
+        books = books.filter(
+          (book) =>
+            book.bookName.toLowerCase().includes(searchQuery.value.toLowerCase()) ||
+            book.author.toLowerCase().includes(searchQuery.value.toLowerCase())
+        );
       }
-    });
-    const goToBookDetails = (_id: string) => {
-      router.push({ name: "bookdetails", params: { _id } });
-    };
 
+      if (sortOption.value === "lowToHigh") {
+        books = [...books].sort((a, b) => a.price - b.price);
+      } else if (sortOption.value === "highToLow") {
+        books = books.sort((a, b) => b.price - a.price);
+      }
+
+      return books;
+    });
+    const goToBookDetails = (id: string) => {
+      router.push({ name: "bookdetails", params: { id } });
+    };
     return {
       books: bookStore.books,
       loading,
       goToBookDetails,
+      searchQuery,
+      filteredBooks,
+      sortOption,
     };
   },
 });
 </script>
 <template>
   <div id="app">
-    <HeaderComponent class="headercomponent" />
+    <HeaderComponent class="headercomponent" v-model:searchQuery="searchQuery" />
     <main v-if="!loading">
       <div class="books1">
         <div>
           <h2>Books</h2>
-          ({{ books.length }} Items)
+          ({{ filteredBooks.length }} Items)
+        </div>
+        <div>
+          <v-select
+            v-model="sortOption"
+            :items="['default', 'lowToHigh', 'highToLow']"
+            label="Sort By Price"
+          >
+          </v-select>
         </div>
       </div>
       <div class="books">
         <BookCard
-          v-for="book in books"
+          v-for="book in filteredBooks"
           :key="book._id"
           :book="book"
           @book-clicked="goToBookDetails(book._id)"
