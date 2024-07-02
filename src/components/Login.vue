@@ -78,7 +78,8 @@
 
 <script lang="ts">
 import { defineComponent } from 'vue'
-
+import UserService from '../Services/User.service'
+import router from '../router'
 export default defineComponent({
   name: 'LoginPage',
   data() {
@@ -90,13 +91,23 @@ export default defineComponent({
     }
   },
   methods: {
-    handleSubmit() {
-      if (this.isLogin) {
-        console.log('Login - Email:', this.email)
-        console.log('Login - Password:', this.password)
+    async handleSubmit() {
+      if (this.email && this.password) {
+        const userCredentials = {
+          email: this.email,
+          password: this.password
+        }
+        try {
+          if (this.isLogin) {
+            const response = await UserService.loginUser(userCredentials)
+            console.log('Login success:', response.data)
+            this.$router.push({ name: 'dashboard' })
+          }
+        } catch (error) {
+          console.error('Error:', error.response ? error.response.data : error.message)
+        }
       } else {
-        console.log('Signup - Email:', this.email)
-        console.log('Signup - Password:', this.password)
+      console.log('Please enter email and password')
       }
     }
   }
@@ -110,7 +121,8 @@ export default defineComponent({
   padding: 0;
 }
 
-html, body {
+html,
+body {
   height: 100%;
   width: 100%;
   overflow: hidden;
@@ -128,7 +140,6 @@ html, body {
 .left-section,
 .right-section {
   position: relative;
-  
 }
 
 .left-section .content-wrapper {

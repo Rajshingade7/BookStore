@@ -10,29 +10,29 @@
       <div class="form-wrapper">
         <div class="form-header">
           <v-btn-toggle v-model="isLogin" class="toggle-buttons" mandatory>
-            <v-btn class="toggle-button" :class="{ active: !isLogin }" @click="isLogin = true"
-              >LOGIN</v-btn
-            >
-            <v-btn class="toggle-button" :class="{ active: isLogin }" @click="isLogin = false"
-              >SIGNUP</v-btn
-            >
+            <v-btn class="toggle-button" :class="{ active: isLogin }" @click="isLogin = true">LOGIN</v-btn>
+            <v-btn class="toggle-button" :class="{ active: !isLogin }" @click="isLogin = false">SIGNUP</v-btn>
           </v-btn-toggle>
         </div>
-        <v-form @submit.prevent="handleSubmit">
-          <div class="u-title">Full Name</div>
-          <v-text-field
-            v-model="fullName"
-            class="u-input"
-            density="compact"
-            placeholder="Full Name"
-            variant="outlined"
-            required
-          ></v-text-field>
+        <v-form ref="form" v-slot="{ validate }">
+          <div v-if="!isLogin">
+            <div class="u-title">Full Name</div>
+            <v-text-field
+              v-model="fullName"
+              class="u-input"
+              :rules="[v => !!v || 'Full Name is required']"
+              density="compact"
+              placeholder="Full Name"
+              variant="outlined"
+              required
+            ></v-text-field>
+          </div>
 
           <div class="u-title">Email Id</div>
           <v-text-field
             v-model="email"
             class="u-input"
+            :rules="[v => !!v || 'Email is required', v => /.+@.+\..+/.test(v) || 'Email must be valid']"
             density="compact"
             placeholder="Email address"
             variant="outlined"
@@ -44,6 +44,7 @@
             v-model="password"
             :append-inner-icon="visible ? 'mdi-eye-off' : 'mdi-eye'"
             :type="visible ? 'text' : 'password'"
+            :rules="[v => !!v || 'Password is required', v => v.length >= 6 || 'Password must be at least 6 characters']"
             density="compact"
             placeholder="Enter your password"
             variant="outlined"
@@ -51,10 +52,12 @@
             required
           ></v-text-field>
 
-          <div class="u-title">Mobile No.</div>
+          <div v-if="!isLogin" class="u-title">Mobile No.</div>
           <v-text-field
+            v-if="!isLogin"
             v-model="mobileNo"
             class="u-input"
+            :rules="[v => !!v || 'Mobile number is required', v => /^\d+$/.test(v) || 'Mobile number must be valid']"
             density="compact"
             placeholder="Mobile Number"
             variant="outlined"
@@ -63,14 +66,14 @@
 
           <div>
             <v-btn
-              @click="handleSubmit"
+              @click="validateAndSubmit"
               class="u-btn"
               color="#A03037"
               size="large"
               variant="elevated"
               block
             >
-              {{ isLogin ? 'Signup' : 'Login' }}
+              {{ isLogin ? 'Login' : 'Signup' }}
             </v-btn>
           </div>
         </v-form>
@@ -80,34 +83,56 @@
 </template>
 
 <script lang="ts">
-import { defineComponent } from 'vue'
+import { defineComponent } from 'vue';
+import UserService from '../Services/User.service';
 
 export default defineComponent({
   name: 'LoginPage',
+
   data() {
     return {
-      isLogin: true,
+      isLogin: false, // Set the default to show the signup form
       fullName: '',
       email: '',
       password: '',
       mobileNo: '',
       visible: false
-    }
+    };
   },
+
   methods: {
-    handleSubmit() {
-      if (this.isLogin) {
-        console.log('Login - Email:', this.email)
-        console.log('Login - Password:', this.password)
-      } else {
-        console.log('Signup - Full Name:', this.fullName)
-        console.log('Signup - Email:', this.email)
-        console.log('Signup - Password:', this.password)
-        console.log('Signup - Mobile No.:', this.mobileNo)
+    async handleSubmit() {
+      const userCredentials = {
+        email: this.email,
+        password: this.password,
+        fullName: this.fullName,
+        phone: this.mobileNo
+      };
+
+      try {
+        if (!this.isLogin) {
+          const response = await UserService.signupUser(userCredentials);
+          console.log('Signup success:', response);
+          this.$router.push({ name: 'login' });
+        } else {
+          // Implement login logic here if needed
+          console.log('Login success:', userCredentials);
+        }
+      } catch (error:any) {
+        console.error('Error:', error.response ? error.response.data : error.message);
+        // Handle error (e.g., show error message)
       }
+    },
+
+    validateAndSubmit() {
+      this.$refs.form.validate().then(success => {
+        if (success) {
+          this.handleSubmit();
+        }
+      });
     }
   }
-})
+});
 </script>
 
 <style scoped>
@@ -123,6 +148,7 @@ body {
   width: 100%;
   overflow: hidden;
 }
+
 .login-page {
   display: flex;
   justify-content: center;
@@ -160,7 +186,7 @@ body {
 
 .form-wrapper {
   position: absolute;
-  top:30%;
+  top: 30%;
   transform: translateY(-50%);
   background-color: white;
   padding: 40px;

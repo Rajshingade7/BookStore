@@ -1,36 +1,45 @@
 <template>
-  <div class="book-card">
-  <div class="image">
-  <img :src="book.image" alt="Book Image" />
-  </div> 
+  <div class="book-card" @click="handleClick">
+    <div class="image">
+      <img src="/public/Image 11@2x.png" alt="Book Image" />
+    </div>
     <div class="book-info">
-      <h3>{{ book.title }}</h3>
+      <h3>{{ book.bookName }}</h3>
       <p>{{ book.author }}</p>
       <div class="rating-par">
         <p class="rating">4.5 ★</p>
         &nbsp;
-        <p> (20) </p>
+        <p>({{ book.quantity }})</p>
       </div>
-      <p class="price">Rs. 1500 <span class="old-price">Rs. 2000</span></p>
+      <p class="price">
+        {{ book.discountPrice }} <span class="old-price">{{ book.price }}</span>
+      </p>
     </div>
   </div>
 </template>
 
 <script lang="ts">
-import { defineComponent, PropType } from 'vue';
+import { defineComponent, PropType } from "vue";
 
 interface Book {
+  id: string;
   image: string;
   title: string;
   author: string;
 }
 
 export default defineComponent({
-  name: 'BookCard',
+  name: "BookCard",
   props: {
     book: {
       type: Object as PropType<Book>,
       required: true,
+    },
+  },
+  emits: ["book-clicked"],
+  methods: {
+    handleClick() {
+      this.$emit("book-clicked", this.book._id);
     },
   },
 });
@@ -43,28 +52,28 @@ export default defineComponent({
   overflow: hidden;
   margin: 1rem;
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-  height:auto;
-  max-height: 270px;
+  height: 280px;
+  width: 233px;
+  max-height: 300px;
 }
-.image{
-  background:#f8f5f5;
-  display:flex;
-  justify-content:center;
+.image {
+  background: #f8f5f5;
+  display: flex;
+  justify-content: center;
 }
 .book-card img {
-  padding:1rem;
+  padding: 1rem;
   max-width: 100px;
   height: auto;
   display: block;
-
 }
-.book-info{
-  padding:1rem;
-  display:flex;
-  flex-direction:column;
+.book-info {
+  padding: 1rem;
+  display: flex;
+  flex-direction: column;
   align-content: left;
   align-items: flex-start;
-gap: 0.2rem;
+  gap: 0.2rem;
 }
 
 .book-info h3 {
@@ -73,20 +82,22 @@ gap: 0.2rem;
   font-weight: bold;
 }
 .book-info p {
-  margin: 0.2rem 0; 
-  color:#999
+  margin: 0.2rem 0;
+  color: #999;
 }
-.rating-par{
+.rating-par {
   display: flex;
-  color:#999
+  color: #999;
 }
 .book-info .rating {
   background-color: #17c44e;
-  color:white;
+  color: white;
+  padding: 0 0.2rem;
+  border-radius: 3px;
 }
 
 .book-info .price {
-  color:Black;
+  color: Black;
   font-weight: bold;
 }
 

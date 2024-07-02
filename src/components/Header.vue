@@ -36,7 +36,7 @@ export default defineComponent({
   background-color: #b71c1c;
  padding: 0.3rem 12rem;
   color: white;
-  
+
 }
 
 .logo {
