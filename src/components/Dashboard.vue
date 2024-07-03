@@ -1,57 +1,57 @@
 <script lang="ts">
-import { defineComponent, computed, ref } from "vue";
-import HeaderComponent from "./Header.vue";
-import FooterComponent from "./Footer.vue";
-import BookCard from "./BookCard.vue";
-import { useRouter } from "vue-router";
-import { useBookStore } from "../stores/bookStore";
+import { defineComponent, computed, ref } from 'vue'
+import HeaderComponent from './Header.vue'
+import FooterComponent from './Footer.vue'
+import BookCard from './BookCard.vue'
+import { useRouter } from 'vue-router'
+import { useBookStore } from '../stores/bookStore'
 export default defineComponent({
-  name: "App",
+  name: 'App',
   components: {
     HeaderComponent,
     FooterComponent,
-    BookCard,
+    BookCard
   },
 
   setup() {
-    const router = useRouter();
-    const bookStore = useBookStore();
-    const loading = ref(false);
-    const searchQuery = ref("");
-    const sortOption = ref("Sort By relevance");
+    const router = useRouter()
+    const bookStore = useBookStore()
+    const loading = ref(false)
+    const searchQuery = ref('')
+    const sortOption = ref('Sort By relevance')
 
     const filteredBooks = computed(() => {
-      let books = bookStore.books;
+      let books = bookStore.books
 
       if (searchQuery.value) {
         books = books.filter(
           (book) =>
             book.bookName.toLowerCase().includes(searchQuery.value.toLowerCase()) ||
             book.author.toLowerCase().includes(searchQuery.value.toLowerCase())
-        );
+        )
       }
 
-      if (sortOption.value === "lowToHigh") {
-        books = [...books].sort((a, b) => a.discountPrice - b.discountPrice);
-      } else if (sortOption.value === "highToLow") {
-        books = books.sort((a, b) => b.discountPrice - a.discountPrice);
+      if (sortOption.value === 'lowToHigh') {
+        books = [...books].sort((a, b) => a.discountPrice - b.discountPrice)
+      } else if (sortOption.value === 'highToLow') {
+        books = books.sort((a, b) => b.discountPrice - a.discountPrice)
       }
 
-      return books;
-    });
+      return books
+    })
     const goToBookDetails = (id: string) => {
-      router.push({ name: "bookdetails", params: { id } });
-    };
+      router.push({ name: 'bookdetails', params: { id } })
+    }
     return {
       books: bookStore.books,
       loading,
       goToBookDetails,
       searchQuery,
       filteredBooks,
-      sortOption,
-    };
-  },
-});
+      sortOption
+    }
+  }
+})
 </script>
 <template>
   <div id="app">
@@ -64,15 +64,12 @@ export default defineComponent({
         </div>
         <div>
           <v-container>
-            <v-select
-            v-model="sortOption"
-            class="sortbyrelevance"
-            variant="outlined"
-            :items="['Sort By relevance', 'lowToHigh', 'highToLow']"
-            >
-          </v-select>
+            <select v-model="sortOption" class="sortbyrelevance">
+              <option value="Sort By relevance">Sort By Relevance</option>
+              <option value="lowToHigh">Price: Low to High</option>
+              <option value="highToLow">Price: High to Low</option>
+            </select>
           </v-container>
-          
         </div>
       </div>
       <div class="books">
@@ -95,14 +92,14 @@ export default defineComponent({
   min-height: 100vh;
 }
 
-.books1{
-  display:flex;
+.books1 {
+  display: flex;
   justify-content: space-between;
-  width:100vw;
-  padding:0rem 12.5rem;
+  width: 100vw;
+  padding: 0rem 12.5rem;
 }
-.books2{
-  display:flex;
+.books2 {
+  display: flex;
   align-items: center;
   gap: 10px;
 }
@@ -113,8 +110,9 @@ main {
   justify-content: center;
   padding: 2rem;
 }
-.sortbyrelevance{
-  width:250px;
+.sortbyrelevance {
+  width: 250px;
+  height: 40px;
 }
 
 .books {

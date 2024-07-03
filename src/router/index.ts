@@ -4,6 +4,8 @@ import Signup from '../views/SignupView.vue'
 import Dashboard from '../views/DashboardView.vue'
 import BookDetails from '../views/BookDetailsView.vue'
 import { useBookStore } from '@/stores/bookStore'
+import Cart from '../components/Cart.vue'
+import { useCartStore } from '../stores/CartStore'
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
   routes: [
@@ -18,29 +20,36 @@ const router = createRouter({
       component: Signup
     },
     {
-      path:'/dashboard',
-      name:'dashboard',
+      path: '/dashboard',
+      name: 'dashboard',
       component: Dashboard,
       beforeEnter: async (to, from, next) => {
-        const bookStore = useBookStore();
+        const bookStore = useBookStore()
         if (!bookStore.books.length) {
-          await bookStore.fetchBooks();
+          await bookStore.fetchBooks()
         }
-        next();
+        next()
       }
     },
     {
       path: '/dashboard/book/:id',
       name: 'bookdetails',
       component: BookDetails,
-      props: true,
+      props: true
     },
     {
-      path:'/newcomponent',
-      name:'newcomponent',
+      path: '/newcomponent',
+      name: 'newcomponent',
       component: () => import('../components/newComponent.vue')
-    }
+    },
+    { path: '/cart', name: 'Cart', component: Cart,
+      beforeEnter: async (to, from, next) => {
+        const cartStore = useCartStore();
+        await cartStore.fetchCartItems();
+        next();
+      },
+     },
+    
   ]
 })
-
 export default router

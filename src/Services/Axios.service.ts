@@ -15,7 +15,7 @@ export const Get = (url:any, config={}) => {
         const token=localStorage.getItem('token');
         const headers={
             ...config.headers,
-            Authorization:`${token}`
+            'x-access-token':token
         }
         return axios.get(BASE_URL + url, {...config,headers});
     } catch (error) {

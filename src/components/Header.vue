@@ -3,21 +3,55 @@
     <div class="logo">
       <img src="../../public/education@2x.png" alt="Logo" class="logo-image" />Bookstore
     </div>
-    <input
-      type="text"
-      placeholder="Search..."
-      class="search-bar"
-      v-model="localSearchQuery"
-    />
+    <input type="text" placeholder="Search..." class="search-bar" v-model="localSearchQuery" />
     <div class="profile-cart">
+      <v-menu offset-y>
+        <template v-slot:activator="{ on }">
+          <div class="icon-with-label">
+            <v-btn icon v-on="on">
+              <v-icon>mdi-account-outline</v-icon>
+            </v-btn>
+            <span class="icon-label">Profile</span>
+          </div>
+        </template>
+        <v-list>
+          <v-list-item @click="goToProfile">
+            <v-list-item-icon>
+              <v-icon>mdi-account</v-icon>
+            </v-list-item-icon>
+            <v-list-item-content>
+              <v-list-item-title>Profile</v-list-item-title>
+            </v-list-item-content>
+          </v-list-item>
+          <v-list-item @click="goToOrders">
+            <v-list-item-icon>
+              <v-icon>mdi-package-variant</v-icon>
+            </v-list-item-icon>
+            <v-list-item-content>
+              <v-list-item-title>My Orders</v-list-item-title>
+            </v-list-item-content>
+          </v-list-item>
+          <v-list-item @click="goToWishlist">
+            <v-list-item-icon>
+              <v-icon>mdi-heart</v-icon>
+            </v-list-item-icon>
+            <v-list-item-content>
+              <v-list-item-title>My Wishlist</v-list-item-title>
+            </v-list-item-content>
+          </v-list-item>
+          <v-divider></v-divider>
+          <v-list-item @click="logout">
+            <v-list-item-icon>
+              <v-icon>mdi-logout</v-icon>
+            </v-list-item-icon>
+            <v-list-item-content>
+              <v-list-item-title>Logout</v-list-item-title>
+            </v-list-item-content>
+          </v-list-item>
+        </v-list>
+      </v-menu>
       <div class="icon-with-label">
-        <v-btn icon>
-          <v-icon>mdi-account-outline</v-icon>
-        </v-btn>
-        <span class="icon-label">Profile</span>
-      </div>
-      <div class="icon-with-label">
-        <v-btn icon>
+        <v-btn icon @click="goToCart">
           <v-icon>mdi-cart-outline</v-icon>
         </v-btn>
         <span class="icon-label">Cart</span>
@@ -27,28 +61,54 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, ref, watch } from "vue";
+import { defineComponent, ref, watch } from 'vue'
+import { useRouter } from 'vue-router'
 
 export default defineComponent({
-  name: "HeaderComponent",
+  name: 'HeaderComponent',
   props: {
     searchQuery: {
       type: String,
-      required: true,
-    },
+      required: true
+    }
   },
   setup(props, { emit }) {
-    const localSearchQuery = ref(props.searchQuery);
+    const localSearchQuery = ref(props.searchQuery)
+    const router = useRouter()
+    const goToProfile = () => {
+      router.push('/profile')
+    }
 
+    const goToOrders = () => {
+      router.push('/orders')
+    }
+
+    const goToWishlist = () => {
+      router.push('/wishlist')
+    }
+
+    const goToCart = () => {
+      router.push('/cart')
+    }
+
+    const logout = () => {
+      localStorage.removeItem('token')
+      console.log('Logged out')
+    }
     watch(localSearchQuery, (newQuery) => {
-      emit("update:searchQuery", newQuery);
-    });
+      emit('update:searchQuery', newQuery)
+    })
 
     return {
       localSearchQuery,
-    };
-  },
-});
+      goToCart,
+      goToProfile,
+      goToOrders,
+      goToWishlist,
+      logout
+    }
+  }
+})
 </script>
 
 <style scoped>
