@@ -55,7 +55,6 @@ export default defineComponent({
   overflow: hidden;
   margin: 1rem;
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-  height: 280px;
   width: 233px;
   max-height: 300px;
 }

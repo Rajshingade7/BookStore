@@ -22,10 +22,10 @@ export const getFeedback = (id: string) => {
 }
 
 export const setFeedback = (id: string, feed: Object) => {
-  const key = localStorage.getItem('API_KEY')
-  console.log(key)
+  const token = localStorage.getItem('token')
+  console.log(token)
   const headers = {
-    'x-access-token': key
+    'x-access-token': token
   }
   return Post(`bookstore_user/add/feedback/${id}`, feed, { headers })
 }

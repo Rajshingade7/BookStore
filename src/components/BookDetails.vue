@@ -5,11 +5,11 @@
     <v-breadcrumbs :items="['Home', 'Book(01)']"></v-breadcrumbs>
     <div class="main">
       <div class="d-flex ml-md-5">
-        <div class="u-smbox d-flex align-center justify-center">
+        <div class="u-smbox d-flex align-center justify-center gap-20">
           <img height="55" width="45" src="../../public/Image 11@2x.png" alt="" />
         </div>
         <div class="u-smbox d-flex align-center justify-center">
-          <img height="55" width="45" src="../../public/Image 11@2x.png" alt="" />
+          <img height="55" width="45" src="../../public/Image 23.png" alt="" />
         </div>
       </div>
 
@@ -23,12 +23,7 @@
           </div>
         </div>
         <div class="mt-5 d-flex justify-space-between align-center w-100">
-          <v-btn
-            class="w-50"
-            max-height="40"
-            max-width="170"
-            color="#A03037"
-            @click="addToBag"
+          <v-btn class="w-50" max-height="40" max-width="170" color="#A03037" @click="addToBag"
             >Add to Bag</v-btn
           >
           <v-btn
@@ -74,8 +69,8 @@
           </span>
           <span class="u-sm-b pl-2 pb-10 text-justify">
             Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor
-            incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis
-            nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.
+            incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud
+            exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.
           </span>
         </div>
         <v-divider></v-divider>
@@ -84,14 +79,8 @@
           <div class="mt-3">
             <v-card class="mx-auto d-flex flex-column" max-width="605" color="#F5F5F5">
               <v-card-item>
-                <v-card-subtitle opacity="1" class="pl-2">
-                  Overall Rating
-                </v-card-subtitle>
-                <v-rating
-                  color="#FFCE00"
-                  v-model="rating"
-                  density="comfortable"
-                ></v-rating>
+                <v-card-subtitle opacity="1" class="pl-2"> Overall Rating </v-card-subtitle>
+                <v-rating color="#FFCE00" v-model="rating" density="comfortable"></v-rating>
               </v-card-item>
               <v-textarea
                 max-width="560"
@@ -103,23 +92,20 @@
                 variant="solo"
                 v-model="review"
               ></v-textarea>
-              <v-btn
-                color="#3371B5"
-                class="align-self-end mr-5 mb-5"
-                @click="submitReview"
-                >Submit</v-btn
-              >
+              <div class="button-container">
+                <v-btn class="custom-btn" @click="submitReview">Submit</v-btn>
+              </div>
             </v-card>
           </div>
         </div>
-        <div class="d-flex mt-8" v-for="feedback in feedbacks" :key="feedback.id">
-          <div>
-            <v-avatar color="#F5F5F5" class="border-sm">
-              <span style="color: #707070" class="text-h6">{{ feedback.initials }}</span>
+        <div class="feedback-item mt-8" v-for="(feedback, index) in visibleFeedbacks" :key="feedback.id">
+          <div class="avatar-wrapper">
+            <v-avatar color="#F5F5F5" class="avatar-border">
+              <span class="avatar-text">{{ feedback.initials }}</span>
             </v-avatar>
           </div>
-          <div class="ml-3 mt-2">
-            <span
+          <div class="content-wrapper">
+            <span class="user-name"
               ><strong>{{ feedback.user_id.fullName }}</strong></span
             >
             <div>
@@ -130,10 +116,13 @@
                 density="compact"
               ></v-rating>
             </div>
-            <span style="color: #707070" class="text-body-2 text-justify">{{
-              feedback.comment
-            }}</span>
+            <span class="comment-text">{{ feedback.comment }}</span>
           </div>
+        </div>
+        <div v-if="feedbacks.length > 6" class="button-container2">
+          <v-btn class="custom-btn" @click="toggleShowAllFeedbacks">
+            {{ showAllFeedbacks ? 'Hide Other Feedbacks' : 'Show All Feedbacks' }}
+          </v-btn>
         </div>
       </div>
     </div>
@@ -141,71 +130,109 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, ref, onMounted } from "vue";
-import { useRoute } from "vue-router";
-import Headercomponent from "./Header.vue";
-import { useBookStore } from "../stores/bookStore";
-import { getFeedback } from "../Services/Book.service";
+import { defineComponent, ref, onMounted,watch,computed } from 'vue'
+import { useRoute } from 'vue-router'
+import Headercomponent from './Header.vue'
+import { useBookStore } from '../stores/bookStore'
+import { getFeedback, setFeedback } from '../Services/Book.service'
 interface Feedback {
-  id: string;
-  name: string;
-  initials: string;
-  rating: number;
-  comment: string;
+  id: string
+  name: string
+  initials: string
+  rating: number
+  comment: string
 }
 
 export default defineComponent({
   components: {
-    Headercomponent,
+    Headercomponent
   },
-  name: "BookDetailsView",
+  name: 'BookDetailsView',
   data() {
     return {
       rating: 0,
-      review: "",
-    };
+      review: ''
+    }
   },
   setup() {
-    const route = useRoute();
-    const bookStore = useBookStore();
-    const book = ref(null);
-    const feedbacks = ref<Feedback[]>([]);
+    const rating = ref(0)
+    const review = ref('')
+    const route = useRoute()
+    const bookStore = useBookStore()
+    const book = ref(null)
+    const feedbacks = ref<Feedback[]>([])
+    const showAllFeedbacks = ref<boolean>(false);
+    const getInitials = (fullName: string): string => {
+      if (!fullName) return ''
+      const nameArray = fullName.split(' ')
+      const initials = nameArray.map((name) => name.charAt(0)).join('')
+      return initials.toUpperCase()
+    }
     onMounted(async () => {
-      const bookId = route.params.id as string;
-      await bookStore.fetchBooks();
-      book.value = bookStore.books.find((b) => b._id === bookId);
+      const bookId = route.params.id as string
+      await bookStore.fetchBooks()
+      book.value = bookStore.books.find((b) => b._id === bookId)
       if (book.value) {
         try {
-          const feedbackData = await getFeedback(bookId);
-          console.log(feedbackData);
-          feedbacks.value = feedbackData.data.result;
+          const feedbackData = await getFeedback(bookId)
+          console.log(feedbackData.data.result)
+          feedbacks.value = feedbackData.data.result.map((feedback: any) => ({
+            ...feedback,
+            initials: getInitials(feedback.user_id.fullName)
+          }))
         } catch (error) {
-          console.error("Error fetching feedback:", error);
+          console.error('Error fetching feedback:', error)
         }
       }
-    });
+    })
 
     const addToBag = () => {
-      console.log("Add to Bag clicked");
-    };
+      console.log('Add to Bag clicked')
+    }
 
     const addToWishlist = () => {
-      console.log("Add to Wishlist clicked");
+      console.log('Add to Wishlist clicked')
+    }
+
+    const submitReview = async () => {
+      try {
+        const bookId = route.params.id as string
+        const response = await setFeedback(bookId, { rating: rating.value, comment: review.value })
+        console.log('Review submitted successfully:', response)
+      } catch (error) {
+        console.error('Error submitting review:', error)
+      }
+    }
+    const reversedFeedbacks = ref<Feedback[]>([]);
+    watch(feedbacks, (newVal) => {
+      reversedFeedbacks.value = newVal.slice().reverse();
+    });
+    const toggleShowAllFeedbacks = () => {
+      showAllFeedbacks.value = !showAllFeedbacks.value;
     };
 
-    const submitReview = () => {
-      console.log("Review submitted", this.rating, this.review);
-    };
-
+    const visibleFeedbacks = computed(() => {
+      if (showAllFeedbacks.value) {
+        return reversedFeedbacks.value;
+      } else {
+        return reversedFeedbacks.value.slice(0, 6);
+      }
+    });
     return {
+      rating,
+      review,
       book,
       feedbacks,
       addToBag,
       addToWishlist,
       submitReview,
-    };
-  },
-});
+      reversedFeedbacks,
+      toggleShowAllFeedbacks,
+      visibleFeedbacks,
+      showAllFeedbacks,
+    }
+  }
+})
 </script>
 
 <style scoped>
@@ -221,6 +248,9 @@ export default defineComponent({
   align-items: center;
   height: 413px;
   width: 361px;
+}
+.gap-20 {
+  margin-bottom: 5px;
 }
 .u-sm-b {
   font-size: 0.8em;
@@ -282,6 +312,58 @@ export default defineComponent({
 .left-align {
   text-align: left;
   padding: 0;
+}
+.custom-btn {
+  background-color: #3371b5;
+  color: white;
+}
+
+.button-container {
+  display: flex;
+  justify-content: flex-end;
+  margin-right: 20px;
+  margin-bottom: 20px;
+}
+.button-container2{
+  
+  margin-top:10px;
+}
+.feedback-item {
+  display: flex;
+  align-items: center;
+}
+
+.mt-8 {
+  margin-top: 2rem; /* Adjust according to your spacing scale */
+}
+
+.avatar-wrapper {
+  margin-right: 16px; /* Adjust the gap as needed */
+}
+
+.content-wrapper {
+  display: flex;
+  flex-direction: column;
+}
+
+.avatar-text {
+  font-size: 1.25rem;
+  font-weight: 500;
+  color: #707070;
+}
+
+.user-name {
+  font-size: 1.25rem;
+  font-weight: 500;
+}
+
+.comment-text {
+  font-size: 0.875rem;
+  color: #707070;
+}
+
+.avatar-border {
+  border: 1px solid #707070;
 }
 
 @media only screen and (max-width: 600px) {

@@ -18,7 +18,7 @@ export default defineComponent({
     const bookStore = useBookStore();
     const loading = ref(false);
     const searchQuery = ref("");
-    const sortOption = ref("default");
+    const sortOption = ref("Sort By relevance");
 
     const filteredBooks = computed(() => {
       let books = bookStore.books;
@@ -32,9 +32,9 @@ export default defineComponent({
       }
 
       if (sortOption.value === "lowToHigh") {
-        books = [...books].sort((a, b) => a.price - b.price);
+        books = [...books].sort((a, b) => a.discountPrice - b.discountPrice);
       } else if (sortOption.value === "highToLow") {
-        books = books.sort((a, b) => b.price - a.price);
+        books = books.sort((a, b) => b.discountPrice - a.discountPrice);
       }
 
       return books;
@@ -58,17 +58,21 @@ export default defineComponent({
     <HeaderComponent class="headercomponent" v-model:searchQuery="searchQuery" />
     <main v-if="!loading">
       <div class="books1">
-        <div>
+        <div class="books2">
           <h2>Books</h2>
           ({{ filteredBooks.length }} Items)
         </div>
         <div>
-          <v-select
+          <v-container>
+            <v-select
             v-model="sortOption"
-            :items="['default', 'lowToHigh', 'highToLow']"
-            label="Sort By Price"
-          >
+            class="sortbyrelevance"
+            variant="outlined"
+            :items="['Sort By relevance', 'lowToHigh', 'highToLow']"
+            >
           </v-select>
+          </v-container>
+          
         </div>
       </div>
       <div class="books">
@@ -90,10 +94,17 @@ export default defineComponent({
   flex-direction: column;
   min-height: 100vh;
 }
-.books1 {
-  display: flex;
+
+.books1{
+  display:flex;
   justify-content: space-between;
-  padding: 0rem 8rem;
+  width:100vw;
+  padding:0rem 12.5rem;
+}
+.books2{
+  display:flex;
+  align-items: center;
+  gap: 10px;
 }
 main {
   flex: 1;
@@ -101,6 +112,9 @@ main {
   flex-wrap: wrap;
   justify-content: center;
   padding: 2rem;
+}
+.sortbyrelevance{
+  width:250px;
 }
 
 .books {
