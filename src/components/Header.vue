@@ -6,49 +6,31 @@
     <input type="text" placeholder="Search..." class="search-bar" v-model="localSearchQuery" />
     <div class="profile-cart">
       <v-menu offset-y>
-        <template v-slot:activator="{ on }">
+        <template v-slot:activator="{ props }">
           <div class="icon-with-label">
-            <v-btn icon v-on="on">
+            <v-btn icon class="end-btn1" v-bind="props">
               <v-icon>mdi-account-outline</v-icon>
-            </v-btn>
-            <span class="icon-label">Profile</span>
+          </v-btn>
+          <span class="icon-label">Profile</span>
           </div>
         </template>
-        <v-list>
-          <v-list-item @click="goToProfile">
-            <v-list-item-icon>
-              <v-icon>mdi-account</v-icon>
-            </v-list-item-icon>
-            <v-list-item-content>
-              <v-list-item-title>Profile</v-list-item-title>
-            </v-list-item-content>
-          </v-list-item>
-          <v-list-item @click="goToOrders">
-            <v-list-item-icon>
-              <v-icon>mdi-package-variant</v-icon>
-            </v-list-item-icon>
-            <v-list-item-content>
-              <v-list-item-title>My Orders</v-list-item-title>
-            </v-list-item-content>
-          </v-list-item>
-          <v-list-item @click="goToWishlist">
-            <v-list-item-icon>
-              <v-icon>mdi-heart</v-icon>
-            </v-list-item-icon>
-            <v-list-item-content>
-              <v-list-item-title>My Wishlist</v-list-item-title>
-            </v-list-item-content>
-          </v-list-item>
-          <v-divider></v-divider>
-          <v-list-item @click="logout">
-            <v-list-item-icon>
-              <v-icon>mdi-logout</v-icon>
-            </v-list-item-icon>
-            <v-list-item-content>
-              <v-list-item-title>Logout</v-list-item-title>
-            </v-list-item-content>
-          </v-list-item>
-        </v-list>
+        <v-card min-width="200">
+          <v-list>
+            <v-list-item>
+              <div style="margin-left:20px;"><b>Welcome Raj....</b></div>
+              <v-btn variant="plain" @click="goToProfile"><v-icon>mdi-account-outline</v-icon><span>Profile</span></v-btn><br>
+              <v-btn variant="plain" @click="goToOrders"><v-icon>mdi-cart-outline</v-icon><span>My Orders</span></v-btn><br>
+              <v-btn variant="plain" @click="goToWishlist"><v-icon>mdi-heart-outline</v-icon><span>My Wishlist</span></v-btn><br>
+            </v-list-item>
+            <div align="center">
+              <v-btn color="red" width="60%" variant="outlined" @click="logout" class="logout">
+                Logout
+              </v-btn>
+            </div>
+           
+          </v-list>
+          
+        </v-card>
       </v-menu>
       <div class="icon-with-label">
         <v-btn icon @click="goToCart">
@@ -162,5 +144,8 @@ export default defineComponent({
   font-size: 0.75rem;
   color: white;
   margin-top: 0.25rem;
+}
+.logout{
+  color:red;
 }
 </style>

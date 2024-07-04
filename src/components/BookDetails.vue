@@ -1,5 +1,5 @@
 <template>
-  <Headercomponent class="headercomponent" />
+  <Headercomponent />
 
   <v-container>
     <v-breadcrumbs :items="['Home', 'Book(01)']"></v-breadcrumbs>
@@ -22,14 +22,30 @@
               </div> -->
           </div>
         </div>
-        <div class="mt-5 d-flex justify-space-between align-center w-100">
-          <v-btn class="w-50" max-height="40" max-width="170" color="#A03037" @click="addToBag"
-            >Add to Bag</v-btn
-          >
+        <div class="btns">
           <v-btn
+            v-if="!isInCart || cartQuantity === 0"
             class="w-50"
             max-height="40"
             max-width="170"
+            color="#A03037"
+            @click="addToBag"
+            >Add to Bag</v-btn
+          >
+          <div v-else class="quantity-controls">
+            <v-btn icon @click="decrementQuantity">
+              <v-icon>mdi-minus</v-icon>
+            </v-btn>
+            <span class="quantity">{{ cartQuantity }}</span>
+
+            <v-btn icon @click="incrementQuantity">
+              <v-icon>mdi-plus</v-icon>
+            </v-btn>
+          </div>
+          <v-btn
+            max-height="40"
+            width="160"
+            max-width="180"
             color="#333333"
             prepend-icon="mdi-heart"
             @click="addToWishlist"
@@ -98,7 +114,11 @@
             </v-card>
           </div>
         </div>
-        <div class="feedback-item mt-8" v-for="(feedback, index) in visibleFeedbacks" :key="feedback.id">
+        <div
+          class="feedback-item mt-8"
+          v-for="(feedback, index) in visibleFeedbacks"
+          :key="feedback.id"
+        >
           <div class="avatar-wrapper">
             <v-avatar color="#F5F5F5" class="avatar-border">
               <span class="avatar-text">{{ feedback.initials }}</span>
@@ -130,11 +150,13 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, ref, onMounted,watch,computed } from 'vue'
+import { defineComponent, ref, onMounted, watch, computed } from 'vue'
 import { useRoute } from 'vue-router'
 import Headercomponent from './Header.vue'
 import { useBookStore } from '../stores/bookStore'
 import { getFeedback, setFeedback } from '../Services/Book.service'
+import { useCartStore } from '../stores/CartStore'
+import { addToCart, removeFromCart, updateCartItem } from '../Services/Cart.service'
 interface Feedback {
   id: string
   name: string
@@ -160,17 +182,30 @@ export default defineComponent({
     const route = useRoute()
     const bookStore = useBookStore()
     const book = ref(null)
+    const cartStore = useCartStore()
     const feedbacks = ref<Feedback[]>([])
-    const showAllFeedbacks = ref<boolean>(false);
+    const showAllFeedbacks = ref<boolean>(false)
+    const cartQuantity = ref(0)
     const getInitials = (fullName: string): string => {
       if (!fullName) return ''
       const nameArray = fullName.split(' ')
       const initials = nameArray.map((name) => name.charAt(0)).join('')
       return initials.toUpperCase()
     }
+    const isInCart = computed(() => {
+      if (!book.value || cartStore.cartItems.length === 0) return false
+      const cartItem = cartStore.cartItems.find((item) => item.product_id._id === book.value._id)
+      console.log(cartItem)
+      if (cartItem) {
+        cartQuantity.value = cartItem.quantityToBuy
+        return true
+      }
+      return false
+    })
     onMounted(async () => {
       const bookId = route.params.id as string
       await bookStore.fetchBooks()
+      await cartStore.fetchCartItems()
       book.value = bookStore.books.find((b) => b._id === bookId)
       if (book.value) {
         try {
@@ -186,12 +221,65 @@ export default defineComponent({
       }
     })
 
-    const addToBag = () => {
-      console.log('Add to Bag clicked')
+    const addToBag = async () => {
+      try {
+        if (book.value) {
+          await addToCart(book.value._id)
+          await cartStore.fetchCartItems()
+        }
+      } catch (error) {
+        console.error('Error adding to cart:', error)
+      }
     }
 
     const addToWishlist = () => {
       console.log('Add to Wishlist clicked')
+    }
+    const decrementQuantity = async () => {
+  if (!book.value) return;
+
+  const cartItem = cartStore.cartItems.find(item => item.product_id._id === book.value._id);
+
+  if (cartItem) {
+    if (cartQuantity.value > 1) {
+      cartQuantity.value--;
+      try {
+        await updateCartItem(cartItem._id, cartQuantity.value);
+        await cartStore.fetchCartItems();
+      } catch (error) {
+        console.error('Error updating cart item quantity:', error);
+      }
+    } else if (cartQuantity.value === 1) {
+      try {
+        await removeFromCart(cartItem._id);
+        cartQuantity.value = 0;
+        await cartStore.fetchCartItems();
+      } catch (error) {
+        console.error('Error removing cart item:', error);
+      }
+    }
+  } else {
+    console.log('Item not found in cart');
+  }
+};
+
+
+    const incrementQuantity = async () => {
+      if (!book.value) return
+
+      const cartItem = cartStore.cartItems.find((item) => item.product_id._id === book.value._id)
+
+      if (cartItem && cartQuantity.value < book.value.quantity) {
+        cartQuantity.value++
+        try {
+          await updateCartItem(cartItem._id, cartQuantity.value)
+          await cartStore.fetchCartItems()
+        } catch (error) {
+          console.error('Error updating cart item quantity:', error)
+        }
+      } else {
+        console.log('Item not found in cart or maximum quantity reached')
+      }
     }
 
     const submitReview = async () => {
@@ -203,21 +291,21 @@ export default defineComponent({
         console.error('Error submitting review:', error)
       }
     }
-    const reversedFeedbacks = ref<Feedback[]>([]);
+    const reversedFeedbacks = ref<Feedback[]>([])
     watch(feedbacks, (newVal) => {
-      reversedFeedbacks.value = newVal.slice().reverse();
-    });
+      reversedFeedbacks.value = newVal.slice().reverse()
+    })
     const toggleShowAllFeedbacks = () => {
-      showAllFeedbacks.value = !showAllFeedbacks.value;
-    };
+      showAllFeedbacks.value = !showAllFeedbacks.value
+    }
 
     const visibleFeedbacks = computed(() => {
       if (showAllFeedbacks.value) {
-        return reversedFeedbacks.value;
+        return reversedFeedbacks.value
       } else {
-        return reversedFeedbacks.value.slice(0, 6);
+        return reversedFeedbacks.value.slice(0, 6)
       }
-    });
+    })
     return {
       rating,
       review,
@@ -230,6 +318,10 @@ export default defineComponent({
       toggleShowAllFeedbacks,
       visibleFeedbacks,
       showAllFeedbacks,
+      isInCart,
+      cartQuantity,
+      decrementQuantity,
+      incrementQuantity
     }
   }
 })
@@ -241,6 +333,7 @@ export default defineComponent({
   justify-content: space-between;
   margin-top: 20px;
   gap: 10px;
+  padding: 1rem;
 }
 .big-image {
   display: flex;
@@ -324,9 +417,8 @@ export default defineComponent({
   margin-right: 20px;
   margin-bottom: 20px;
 }
-.button-container2{
-  
-  margin-top:10px;
+.button-container2 {
+  margin-top: 10px;
 }
 .feedback-item {
   display: flex;
@@ -365,7 +457,26 @@ export default defineComponent({
 .avatar-border {
   border: 1px solid #707070;
 }
-
+.btns {
+  display: flex;
+  justify-content: space-between;
+  padding: 2rem 0rem;
+  padding-right: 40px;
+}
+.quantity-controls {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.quantity {
+  font-size: 1.5em;
+  border:1px solid rgb(199, 194, 194);
+  width:60px;
+  height:40px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
 @media only screen and (max-width: 600px) {
   .u-flex-book {
     flex-direction: column;

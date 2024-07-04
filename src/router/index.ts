@@ -5,6 +5,7 @@ import Dashboard from '../views/DashboardView.vue'
 import BookDetails from '../views/BookDetailsView.vue'
 import { useBookStore } from '@/stores/bookStore'
 import Cart from '../components/Cart.vue'
+import OrderConfirmation from '../components/OrderConfirmation.vue'
 import { useCartStore } from '../stores/CartStore'
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -42,6 +43,11 @@ const router = createRouter({
       name: 'newcomponent',
       component: () => import('../components/newComponent.vue')
     },
+    {
+      path: '/order-confirmation',
+      name: 'OrderConfirmation',
+      component: OrderConfirmation,
+    },
     { path: '/cart', name: 'Cart', component: Cart,
       beforeEnter: async (to, from, next) => {
         const cartStore = useCartStore();
@@ -51,5 +57,13 @@ const router = createRouter({
      },
     
   ]
+})
+router.beforeEach((to, from, next) => {
+  const token= localStorage.getItem('token');
+  if (to.name !== 'login' && !token) {
+    next({ name: 'login' })
+  } else {
+    next()
+  }
 })
 export default router
