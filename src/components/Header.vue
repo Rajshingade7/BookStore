@@ -1,6 +1,6 @@
 <template>
   <header class="header">
-    <div class="logo">
+    <div class="logo" @click="dashboard">
       <img src="../../public/education@2x.png" alt="Logo" class="logo-image" />Bookstore
     </div>
     <input type="text" placeholder="Search..." class="search-bar" v-model="localSearchQuery" />
@@ -72,7 +72,9 @@ export default defineComponent({
     const goToCart = () => {
       router.push('/cart')
     }
-
+    const dashboard = () => {
+      router.push('/dashboard')
+    }
     const logout = () => {
       localStorage.removeItem('token')
       console.log('Logged out')
@@ -87,7 +89,8 @@ export default defineComponent({
       goToProfile,
       goToOrders,
       goToWishlist,
-      logout
+      logout,
+      dashboard
     }
   }
 })
@@ -147,5 +150,12 @@ export default defineComponent({
 }
 .logout{
   color:red;
+}
+.first{
+  background-color: red;
+  color: white;
+  border-radius: 50%;
+  padding: 0.25rem;
+  margin-left: -0.5rem;
 }
 </style>

@@ -7,17 +7,21 @@
     <div class="mycart">
       <div class="carthead">
         <h2>My Cart ({{ cartItems.length }})</h2>
-        <select class="locationselect">
-          <option value="Bridgelabz LLP">Bridgelabz Solutino LLP, No...</option>
-        </select>
+        <div>
+            <v-icon class="custom-icon">mdi-map-marker</v-icon>
+
+          <select class="locationselect" icon>
+            <option value="Bridgelabz LLP">Bridgelabz Solutino LLP, No...</option>
+          </select>
+        </div>
       </div>
       <div v-for="item in cartItems" :key="item._id" class="cart-item">
         <img src="../../public/Image 23@2x.png" alt="Book Image" />
         <div>
           <span style="font-size: 1.5em"
-            ><strong>{{ book.bookName }}</strong></span
+            ><strong>{{ item.product_id.bookName }}</strong></span
           >
-          <span class="u-smalltext-b">by {{ book.author }}</span>
+          <p>by {{ item.product_id.author }}</p>
           <p>
             Rs. {{ item.product_id.discountPrice }}
             <span class="u-smalltext-b pl-3"
@@ -37,7 +41,12 @@
         </div>
       </div>
       <div class="placebtn">
-        <v-btn class="placeorder" max-height="40" max-width="170" @click="showAddressDetails = true"
+        <v-btn
+          v-if="!showAddressDetails"
+          class="placeorder"
+          max-height="40"
+          max-width="170"
+          @click="showAddressDetails = true"
           >Place Order</v-btn
         >
       </div>
@@ -84,7 +93,14 @@
           <label for="other">Other</label>
         </div>
         <div class="placebtn">
-          <v-btn type="submit" class="placeorder" max-height="40" max-width="170">Continue</v-btn>
+          <v-btn
+            v-if="!showOrderSummary"
+            type="submit"
+            class="placeorder"
+            max-height="40"
+            max-width="170"
+            >Continue</v-btn
+          >
         </div>
       </form>
     </div>
@@ -110,7 +126,7 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, ref } from 'vue'
+import { defineComponent, ref, computed } from 'vue'
 import { useCartStore } from '../stores/CartStore'
 import Header from './Header.vue'
 import Footer from './Footer.vue'
@@ -125,13 +141,17 @@ export default defineComponent({
     const cartStore = useCartStore()
     const showAddressDetails = ref(false)
     const showOrderSummary = ref(false)
-    const fullName = ref('')
-    const mobileNumber = ref('')
-    const address = ref('')
-    const city = ref('')
-    const state = ref('')
-    const type = ref('Home')
 
+    const user = computed(() =>
+      cartStore.cartItems.length > 0 ? cartStore.cartItems[0].user_id : {}
+    )
+    const addresses = computed(() => user.value.address || [])
+    const fullName = ref(user.value.fullName || '')
+    const mobileNumber = ref(user.value.phone || '')
+    const address = ref(addresses.value.length > 0 ? addresses.value[0].fullAddress : '')
+    const city = ref(addresses.value.length > 0 ? addresses.value[0].city : '')
+    const state = ref(addresses.value.length > 0 ? addresses.value[0].state : '')
+    const type = ref(addresses.value.length > 0 ? addresses.value[0].addressType : 'Home')
     const decrementQuantity = (item) => {
       if (item.quantityToBuy > 1) {
         item.quantityToBuy--
@@ -210,6 +230,7 @@ form div {
 .mycart {
   border: 1px solid rgb(198, 198, 191);
   padding: 20px;
+  padding-left: 50px;
 }
 .placeorder {
   background-color: rgb(99, 99, 240);
@@ -233,6 +254,7 @@ form div {
   border: 1px solid rgb(198, 198, 191);
   padding: 20px;
   margin-top: 20px;
+  padding-left: 50px;
 }
 .customerhead {
   display: flex;
@@ -265,5 +287,8 @@ form div {
 .removebtn {
   background-color: none;
   border-radius: 4%;
+}
+.custom-icon {
+  color: red;
 }
 </style>

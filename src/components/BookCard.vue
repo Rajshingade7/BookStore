@@ -15,6 +15,7 @@
         {{ book.discountPrice }} <span class="old-price">{{ book.price }}</span>
       </p>
     </div>
+    
   </div>
 </template>
 
