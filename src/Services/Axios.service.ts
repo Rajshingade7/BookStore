@@ -23,3 +23,16 @@ export const Get = (url:any, config={}) => {
         throw error;
     }
 };
+export const Delete = (url:any, config={}) => { 
+    try {
+        const token=localStorage.getItem('token');
+        const headers={
+            ...config.headers,
+            'x-access-token':token
+        }
+        return axios.delete(BASE_URL + url, {...config,headers});
+    } catch (error) {
+        console.error("There was an error making the DELETE request", error);
+        throw error;
+    }
+}

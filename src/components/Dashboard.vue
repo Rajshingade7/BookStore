@@ -19,7 +19,8 @@ export default defineComponent({
     const loading = ref(false)
     const searchQuery = ref('')
     const sortOption = ref('Sort By relevance')
-
+    const currentPage = ref(1)
+    const itemsPerPage = 12
     const filteredBooks = computed(() => {
       let books = bookStore.books
 
@@ -39,8 +40,25 @@ export default defineComponent({
 
       return books
     })
+    const paginatedBooks = computed(() => {
+      const start = (currentPage.value - 1) * itemsPerPage
+      const end = start + itemsPerPage
+      return filteredBooks.value.slice(start, end)
+    })
+
+    const totalPages = computed(() => Math.ceil(filteredBooks.value.length / itemsPerPage))
     const goToBookDetails = (id: string) => {
       router.push({ name: 'bookdetails', params: { id } })
+    }
+    const nextPage = () => {
+      if (currentPage.value < totalPages.value) {
+        currentPage.value++
+      }
+    }
+    const prevPage = () => {
+      if (currentPage.value > 1) {
+        currentPage.value--
+      }
     }
     return {
       books: bookStore.books,
@@ -48,7 +66,12 @@ export default defineComponent({
       goToBookDetails,
       searchQuery,
       filteredBooks,
-      sortOption
+      sortOption,
+      paginatedBooks,
+      currentPage,
+      totalPages,
+      nextPage,
+      prevPage
     }
   }
 })
@@ -74,11 +97,29 @@ export default defineComponent({
       </div>
       <div class="books">
         <BookCard
-          v-for="book in filteredBooks"
+          v-for="book in paginatedBooks"
           :key="book._id"
           :book="book"
           @book-clicked="goToBookDetails(book._id)"
         />
+      </div>
+      <div class="pagination">
+        <button @click="prevPage" :disabled="currentPage === 1" class="circle-button">
+          <span>&lt;</span>
+        </button>
+        <div class="page-numbers">
+          <button
+            v-for="page in totalPages"
+            :key="page"
+            @click="currentPage = page"
+            :class="['page-number', { active: currentPage === page }]"
+          >
+            {{ page }}
+          </button>
+        </div>
+        <button @click="nextPage" :disabled="currentPage === totalPages" class="circle-button">
+          <span>&gt;</span>
+        </button>
       </div>
     </main>
     <FooterComponent />
@@ -120,5 +161,56 @@ main {
   flex-wrap: wrap;
   justify-content: center;
   padding: 0rem 8rem;
+}
+.pagination {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 1rem;
+  margin-top: 1rem;
+}
+.circle-button {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  border: 1px solid #ddd;
+  background-color: white;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+  font-size: 1.5rem;
+  transition: background-color 0.3s;
+}
+.circle-button:disabled {
+  cursor: not-allowed;
+  opacity: 0.5;
+}
+.circle-button:hover:not(:disabled) {
+  background-color: #f0f0f0;
+}
+
+.page-numbers {
+  display: flex;
+  gap: 0.5rem;
+}
+.page-number {
+  width: 40px;
+  height: 40px;
+  border: 1px solid #ddd;
+  background-color: white;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+.page-number.active {
+  background-color: #8d0d0d;
+  color: white;
+  border-color: #007bff;
+}
+.page-number:hover:not(.active) {
+  background-color: #f0f0f0;
 }
 </style>

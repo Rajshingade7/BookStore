@@ -16,7 +16,7 @@
         </div>
       </div>
       <div v-for="item in cartItems" :key="item._id" class="cart-item">
-        <img src="../../public/Image 23@2x.png" alt="Book Image" />
+        <img src="../../public/Image 11@2x.png" alt="Book Image" />
         <div>
           <span style="font-size: 1.5em"
             ><strong>{{ item.product_id.bookName }}</strong></span
@@ -131,6 +131,7 @@ import { useCartStore } from '../stores/CartStore'
 import Header from './Header.vue'
 import Footer from './Footer.vue'
 import { useRouter } from 'vue-router'
+import { removeFromCart } from '../Services/Cart.service'
 export default defineComponent({
   components: {
     Header,
@@ -164,8 +165,11 @@ export default defineComponent({
       }
     }
 
-    const removeItem = (item) => {
-      cartStore.cartItems = cartStore.cartItems.filter((i) => i._id !== item._id)
+    const removeItem = async (item) => {
+      console.log('Remove item', item._id);
+      await removeFromCart(item._id);
+      await cartStore.fetchCartItems();
+
     }
 
     const selectAddress = () => {
@@ -186,7 +190,7 @@ export default defineComponent({
     }
 
     return {
-      cartItems: cartStore.cartItems,
+      cartItems: computed(() => cartStore.cartItems),
       showAddressDetails,
       showOrderSummary,
       fullName,
@@ -285,7 +289,7 @@ form div {
   border: 0.5px white;
 }
 .removebtn {
-  background-color: none;
+  background-color: white;
   border-radius: 4%;
 }
 .custom-icon {

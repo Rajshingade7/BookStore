@@ -8,6 +8,7 @@ import Cart from '../components/Cart.vue'
 import OrderConfirmation from '../components/OrderConfirmation.vue'
 import { useCartStore } from '../stores/CartStore'
 import UserProfile from '../components/UserProfile.vue'
+import WishList from '../components/WishList.vue'
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
   routes: [
@@ -63,6 +64,11 @@ const router = createRouter({
       path: '/profile',
       name: 'Profile',
       component: UserProfile
+    },
+    {
+      path:'/WishList',
+      name:'WishList',
+      component:WishList
     }
 
   ]

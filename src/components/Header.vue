@@ -33,6 +33,7 @@
         </v-card>
       </v-menu>
       <div class="icon-with-label">
+        
         <v-btn icon @click="goToCart">
           <v-icon>mdi-cart-outline</v-icon>
         </v-btn>
@@ -43,8 +44,9 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, ref, watch } from 'vue'
+import { defineComponent, ref, watch,computed } from 'vue'
 import { useRouter } from 'vue-router'
+import { useCartStore } from '../stores/CartStore';
 
 export default defineComponent({
   name: 'HeaderComponent',
@@ -55,6 +57,9 @@ export default defineComponent({
     }
   },
   setup(props, { emit }) {
+    const cartStore = useCartStore();
+
+    const cartItemCount = computed(() => cartStore.cartItems.length);
     const localSearchQuery = ref(props.searchQuery)
     const router = useRouter()
     const goToProfile = () => {
@@ -90,7 +95,8 @@ export default defineComponent({
       goToOrders,
       goToWishlist,
       logout,
-      dashboard
+      dashboard,
+      cartItemCount
     }
   }
 })
@@ -158,4 +164,10 @@ export default defineComponent({
   padding: 0.25rem;
   margin-left: -0.5rem;
 }
+.cart-badge {
+  margin-left: -0.5rem;
+  color: white;
+  
+}
+
 </style>

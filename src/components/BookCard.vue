@@ -1,21 +1,22 @@
 <template>
-  <div class="book-card" @click="handleClick">
-    <div class="image">
-      <img src="/public/Image 11@2x.png" alt="Book Image" />
-    </div>
-    <div class="book-info">
-      <h3>{{ book.bookName }}</h3>
-      <p>{{ book.author }}</p>
-      <div class="rating-par">
-        <p class="rating">4.5 ★</p>
-        &nbsp;
-        <p>({{ book.quantity }})</p>
+    <div class="book-card" @click="handleClick">
+      <div class="image">
+        <img src="/public/Image 11@2x.png" alt="Book Image" />
       </div>
-      <p class="price">
-        {{ book.discountPrice }} <span class="old-price">{{ book.price }}</span>
-      </p>
+      <div class="book-info">
+        <h3>{{ book.bookName }}</h3>
+        <p>{{ book.author }}</p>
+        <div class="rating-par">
+          <p class="rating">4.5 ★</p>
+          &nbsp;
+          <p>({{ book.quantity }})</p>
+        </div>
+        <p class="price">
+          {{ book.discountPrice }} <span class="old-price">{{ book.price }}</span>
+        </p>     
+      </div>  
     </div>
-  </div>
+  
 </template>
 
 <script lang="ts">

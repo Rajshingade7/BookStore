@@ -43,13 +43,23 @@
             </v-btn>
           </div>
           <v-btn
+            v-if="!isInWishlist"
             max-height="40"
             width="160"
-            max-width="180"
+            max-width="500"
             color="#333333"
             prepend-icon="mdi-heart"
             @click="addToWishlist"
             >Wishlist</v-btn
+          >
+          <v-btn
+            v-else
+            max-height="40"
+            width="160"
+            max-width="180"
+            color="#333333"
+            @click="removeFromWishlist"
+            >Remove Wishlist</v-btn
           >
         </div>
       </div>
@@ -157,6 +167,7 @@ import { useBookStore } from '../stores/bookStore'
 import { getFeedback, setFeedback } from '../Services/Book.service'
 import { useCartStore } from '../stores/CartStore'
 import { addToCart, removeFromCart, updateCartItem } from '../Services/Cart.service'
+import WishListService from '@/Services/WishListService.service'
 interface Feedback {
   id: string
   name: string
@@ -186,6 +197,7 @@ export default defineComponent({
     const feedbacks = ref<Feedback[]>([])
     const showAllFeedbacks = ref<boolean>(false)
     const cartQuantity = ref(0)
+    const isInWishlist = ref(false)
     const getInitials = (fullName: string): string => {
       if (!fullName) return ''
       const nameArray = fullName.split(' ')
@@ -207,6 +219,8 @@ export default defineComponent({
       await bookStore.fetchBooks()
       await cartStore.fetchCartItems()
       book.value = bookStore.books.find((b) => b._id === bookId)
+      isInWishlist.value = await WishListService.isInWishlist(bookId)
+
       if (book.value) {
         try {
           const feedbackData = await getFeedback(bookId)
@@ -215,6 +229,8 @@ export default defineComponent({
             ...feedback,
             initials: getInitials(feedback.user_id.fullName)
           }))
+          const wishlistData = await WishListService.fetchWishlist()
+          wishlist.value = wishlistData.map(item => item.product_id._id) 
         } catch (error) {
           console.error('Error fetching feedback:', error)
         }
@@ -232,37 +248,53 @@ export default defineComponent({
       }
     }
 
-    const addToWishlist = () => {
-      console.log('Add to Wishlist clicked')
+    const addToWishlist = async () => {
+      try {
+        if (book.value) {
+          await WishListService.addwishlist(book.value._id)
+          isInWishlist.value = true
+        }
+      } catch (error) {
+        console.error('Error adding to wishlist:', error)
+      }
+    }
+    const removeFromWishlist = async () => {
+      try {
+        if (book.value) {
+          await WishListService.removeWishlist(book.value._id)
+          isInWishlist.value = false
+        }
+      } catch (error) {
+        console.error('Error removing from wishlist:', error)
+      }
     }
     const decrementQuantity = async () => {
-  if (!book.value) return;
+      if (!book.value) return
 
-  const cartItem = cartStore.cartItems.find(item => item.product_id._id === book.value._id);
+      const cartItem = cartStore.cartItems.find((item) => item.product_id._id === book.value._id)
 
-  if (cartItem) {
-    if (cartQuantity.value > 1) {
-      cartQuantity.value--;
-      try {
-        await updateCartItem(cartItem._id, cartQuantity.value);
-        await cartStore.fetchCartItems();
-      } catch (error) {
-        console.error('Error updating cart item quantity:', error);
-      }
-    } else if (cartQuantity.value === 1) {
-      try {
-        await removeFromCart(cartItem._id);
-        cartQuantity.value = 0;
-        await cartStore.fetchCartItems();
-      } catch (error) {
-        console.error('Error removing cart item:', error);
+      if (cartItem) {
+        if (cartQuantity.value > 1) {
+          cartQuantity.value--
+          try {
+            await updateCartItem(cartItem._id, cartQuantity.value)
+            await cartStore.fetchCartItems()
+          } catch (error) {
+            console.error('Error updating cart item quantity:', error)
+          }
+        } else if (cartQuantity.value === 1) {
+          try {
+            await removeFromCart(cartItem._id)
+            cartQuantity.value = 0
+            await cartStore.fetchCartItems()
+          } catch (error) {
+            console.error('Error removing cart item:', error)
+          }
+        }
+      } else {
+        console.log('Item not found in cart')
       }
     }
-  } else {
-    console.log('Item not found in cart');
-  }
-};
-
 
     const incrementQuantity = async () => {
       if (!book.value) return
@@ -312,7 +344,6 @@ export default defineComponent({
       book,
       feedbacks,
       addToBag,
-      addToWishlist,
       submitReview,
       reversedFeedbacks,
       toggleShowAllFeedbacks,
@@ -321,7 +352,10 @@ export default defineComponent({
       isInCart,
       cartQuantity,
       decrementQuantity,
-      incrementQuantity
+      incrementQuantity,
+      addToWishlist,
+      removeFromWishlist,
+      isInWishlist,
     }
   }
 })
@@ -470,12 +504,33 @@ export default defineComponent({
 }
 .quantity {
   font-size: 1.5em;
-  border:1px solid rgb(199, 194, 194);
-  width:60px;
-  height:40px;
+  border: 1px solid rgb(199, 194, 194);
+  width: 60px;
+  height: 40px;
   display: flex;
   justify-content: center;
   align-items: center;
+}
+.v-btn {
+  margin-right: 10px; /* Adjust spacing between buttons */
+}
+
+.v-btn.error {
+  color: white; /* Text color for the Remove button */
+  background-color: #f44336; /* Background color for the Remove button */
+}
+
+.v-btn.error:hover {
+  background-color: #b71c1c; /* Darker background color on hover for Remove button */
+}
+
+.v-btn.primary {
+  color: white; /* Text color for the Add button */
+  background-color: #2196f3; /* Background color for the Add button */
+}
+
+.v-btn.primary:hover {
+  background-color: #0d47a1; /* Darker background color on hover for Add button */
 }
 @media only screen and (max-width: 600px) {
   .u-flex-book {
