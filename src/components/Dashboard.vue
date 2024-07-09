@@ -149,10 +149,11 @@ main {
   display: flex;
   flex-wrap: wrap;
   justify-content: center;
-  padding: 2rem;
+  padding: 2rem 1rem;
 }
 .sortbyrelevance {
-  width: 250px;
+  width: 100%;
+  max-width: 250px;
   height: 40px;
 }
 
@@ -212,5 +213,29 @@ main {
 }
 .page-number:hover:not(.active) {
   background-color: #f0f0f0;
+}
+
+@media (min-width: 768px) {
+  .books1 {
+    padding: 0rem 2rem;
+  }
+
+  main {
+    padding: 2rem 2rem;
+  }
+
+  .books {
+    padding: 0rem 2rem;
+  }
+}
+
+@media (min-width: 1200px) {
+  .books1 {
+    padding: 0rem 12.5rem;
+  }
+
+  .books {
+    padding: 0rem 8rem;
+  }
 }
 </style>

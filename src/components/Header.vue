@@ -71,7 +71,7 @@ export default defineComponent({
     }
 
     const goToWishlist = () => {
-      router.push('/wishlist')
+      router.push('/WishList')
     }
 
     const goToCart = () => {
@@ -113,6 +113,8 @@ export default defineComponent({
 }
 
 .logo {
+  display: flex;
+  align-items: center;
   font-size: 1.5rem;
   font-weight: bold;
 }
@@ -167,7 +169,49 @@ export default defineComponent({
 .cart-badge {
   margin-left: -0.5rem;
   color: white;
-  
+}
+@media (max-width: 1200px) {
+  .header {
+    padding: 0.3rem 2rem;
+  }
+
+  .search-bar {
+    margin-right: 10%;
+  }
 }
 
+@media (max-width: 768px) {
+  .header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .search-bar {
+    width: 100%;
+    margin: 0.5rem 0;
+  }
+
+  .profile-cart {
+    width: 100%;
+    justify-content: space-between;
+  }
+
+  .icon-with-label {
+    margin: 0;
+  }
+}
+
+@media (max-width: 480px) {
+  .header {
+    padding: 0.3rem 1rem;
+  }
+
+  .search-bar {
+    margin: 0.5rem 0;
+  }
+
+  .icon-label {
+    display: none;
+  }
+}
 </style>

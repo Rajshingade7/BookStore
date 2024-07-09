@@ -295,4 +295,54 @@ form div {
 .custom-icon {
   color: red;
 }
+@media (max-width: 1200px) {
+  .cart {
+    padding: 2rem 4rem;
+    padding-right: 5rem;
+  }
+}
+@media (max-width: 768px) {
+  .cart {
+    padding: 1rem 2rem;
+    padding-right: 2rem;
+  }
+  .carthead, .customerhead {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1rem;
+  }
+  .locationselect {
+    width: 100%;
+  }
+  .nameandmobile {
+    flex-direction: column;
+    gap: 10px;
+  }
+  .textbox, .textarea {
+    width: 100%;
+  }
+  .cart-item, .order-item {
+    flex-direction: column;
+    align-items: center;
+  }
+  .cart-item img, .order-item img {
+    margin-bottom: 1rem;
+  }
+  .cart-item div, .order-item div {
+    margin-left: 0;
+  }
+}
+@media (max-width: 480px) {
+  .cart {
+    padding: 0.5rem 1rem;
+    padding-right: 1rem;
+  }
+  .nameandmobile {
+    gap: 5px;
+  }
+  .cart-item, .order-item {
+    flex-direction: column;
+    align-items: center;
+  }
+}
 </style>

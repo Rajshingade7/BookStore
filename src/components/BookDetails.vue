@@ -1,6 +1,5 @@
 <template>
   <Headercomponent />
-
   <v-container>
     <v-breadcrumbs :items="['Home', 'Book(01)']"></v-breadcrumbs>
     <div class="main">
@@ -168,6 +167,7 @@ import { getFeedback, setFeedback } from '../Services/Book.service'
 import { useCartStore } from '../stores/CartStore'
 import { addToCart, removeFromCart, updateCartItem } from '../Services/Cart.service'
 import WishListService from '@/Services/WishListService.service'
+import { useWishListStore } from '@/stores/WishListStore'
 interface Feedback {
   id: string
   name: string
@@ -197,6 +197,7 @@ export default defineComponent({
     const feedbacks = ref<Feedback[]>([])
     const showAllFeedbacks = ref<boolean>(false)
     const cartQuantity = ref(0)
+    const wishListStore = useWishListStore()
     const isInWishlist = ref(false)
     const getInitials = (fullName: string): string => {
       if (!fullName) return ''
@@ -218,8 +219,9 @@ export default defineComponent({
       const bookId = route.params.id as string
       await bookStore.fetchBooks()
       await cartStore.fetchCartItems()
+      await wishListStore.fetchWishListItems()
       book.value = bookStore.books.find((b) => b._id === bookId)
-      isInWishlist.value = await WishListService.isInWishlist(bookId)
+      isInWishlist.value = wishListStore.isItemInWishlist(bookId)
 
       if (book.value) {
         try {

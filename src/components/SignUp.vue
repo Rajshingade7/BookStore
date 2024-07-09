@@ -10,7 +10,7 @@
       <div class="form-wrapper">
         <div class="form-header">
           <v-btn-toggle v-model="isLogin" class="toggle-buttons" mandatory>
-            <v-btn class="toggle-button" :class="{ active: isLogin }" @click="isLogin = true">LOGIN</v-btn>
+            <v-btn class="toggle-button" :class="{ active: isLogin }" @click="navigatetologin">LOGIN</v-btn>
             <v-btn class="toggle-button" :class="{ active: !isLogin }" @click="isLogin = false">SIGNUP</v-btn>
           </v-btn-toggle>
         </div>
@@ -91,7 +91,7 @@ export default defineComponent({
 
   data() {
     return {
-      isLogin: false, // Set the default to show the signup form
+      isLogin: false,
       fullName: '',
       email: '',
       password: '',
@@ -115,13 +115,14 @@ export default defineComponent({
           console.log('Signup success:', response);
           this.$router.push({ name: 'login' });
         } else {
-          // Implement login logic here if needed
           console.log('Login success:', userCredentials);
         }
       } catch (error:any) {
         console.error('Error:', error.response ? error.response.data : error.message);
-        // Handle error (e.g., show error message)
       }
+    },
+    navigatetologin() {
+      this.$router.push({ name: 'login' });
     },
 
     validateAndSubmit() {
@@ -155,17 +156,20 @@ body {
   align-items: center;
   background-color: #f0f0f0;
   height: 97vh;
-  overflow-y: hidden;
+  width:100%;
+  overflow: hidden;
 }
 
 .left-section,
 .right-section {
   position: relative;
+  
 }
 
 .left-section .content-wrapper {
   text-align: center;
   padding: 40px;
+  width:100%;
   background-color: white;
   border-radius: 8px;
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
@@ -174,7 +178,7 @@ body {
 .left-section .shopping-image {
   width: 20vw;
   margin-bottom: 20px;
-  border-radius: 100%;
+  border-radius: 50%;
 }
 
 .right-section {
@@ -266,21 +270,56 @@ body {
 @media (max-width: 768px) {
   .login-page {
     flex-direction: column;
+    justify-content: left;
+    margin-top: 30%;
   }
 
   .left-section,
   .right-section {
-    flex: none;
     width: 100%;
+    margin: 0;
+    text-align: center;
   }
 
-  .left-section .content-wrapper,
+  .left-section .content-wrapper {
+    margin-bottom: 20px;
+  }
+
+  .left-section .shopping-image {
+    width: 40%;
+    max-width: 150px;
+    margin-bottom: 10px;
+  }
+
   .right-section .form-wrapper {
-    width: calc(100% - 40px);
-    margin: 20px;
+    padding: 20px;
+    border-radius: 0;
+    box-shadow: none;
   }
 
   .toggle-button {
+    font-size: 16px;
+    padding: 10px;
+  }
+
+  .u-btn {
+    font-size: 16px;
+    padding: 10px;
+  }
+}
+
+@media (max-width: 480px) {
+  .left-section .shopping-image {
+    width: 50%;
+    max-width: 100px;
+  }
+
+  .toggle-button {
+    font-size: 14px;
+    padding: 8px;
+  }
+
+  .u-btn {
     font-size: 14px;
     padding: 8px;
   }

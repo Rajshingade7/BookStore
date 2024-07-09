@@ -20,4 +20,16 @@ export default defineComponent({
   text-align: left;
   padding: 0.2rem 12rem;
 }
+@media (min-width: 768px) {
+  .footer {
+    text-align: left;
+    padding: 0.5rem 3rem;
+  }
+}
+
+@media (min-width: 1200px) {
+  .footer {
+    padding: 0.5rem 12rem;
+  }
+}
 </style>

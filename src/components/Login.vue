@@ -13,7 +13,7 @@
             <v-btn class="toggle-button" :class="{ active: isLogin }" @click="isLogin = true"
               >LOGIN</v-btn
             >
-            <v-btn class="toggle-button" :class="{ active: !isLogin }" @click="isLogin = false"
+            <v-btn class="toggle-button" :class="{ active: !isLogin }" @click="navigatetosignup"
               >SIGNUP</v-btn
             >
           </v-btn-toggle>
@@ -109,8 +109,12 @@ export default defineComponent({
       } else {
       console.log('Please enter email and password')
       }
+    },
+    navigatetosignup() {
+      this.$router.push({ name: 'signup' })
     }
   }
+  
 })
 </script>
 
@@ -152,15 +156,17 @@ body {
 
 .left-section .shopping-image {
   width: 20vw;
+  
   margin-bottom: 20px;
-  border-radius: 100%;
+  border-radius: 50%;
 }
 
 .right-section {
   display: flex;
   justify-content: center;
   align-items: center;
-  width: 30%;
+  width: 100%;
+  max-width: 500px;
 }
 
 .right-section .form-wrapper {
@@ -187,7 +193,7 @@ body {
 
 .toggle-button {
   width: 50%;
-  font-size: 30px;
+  font-size: 18px;
   font-weight: bold;
 }
 
@@ -244,7 +250,6 @@ body {
 .u-s-btn {
   width: 48%;
 }
-
 @media (max-width: 768px) {
   .login-page {
     flex-direction: column;
@@ -252,14 +257,25 @@ body {
 
   .left-section,
   .right-section {
-    flex: none;
     width: 100%;
+    margin: 0;
+    text-align: center;
   }
 
-  .left-section .content-wrapper,
+  .left-section .shopping-image {
+    width: 40%;
+    max-width: 200px;
+    margin-bottom: 20px;
+  }
+
   .right-section .form-wrapper {
-    width: calc(100% - 40px);
-    margin: 20px;
+    position: static;
+    width: 100%;
+    max-width: 100%;
+    margin-top: 20px;
+    border-radius: 0;
+    box-shadow: none;
+    padding: 20px;
   }
 
   .toggle-button {

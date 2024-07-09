@@ -52,6 +52,7 @@ export default defineComponent({
     const wishListStore = useWishListStore();
     const loading = ref(true);
     const wishListItems = computed(() => wishListStore.wishListItems);
+   
     onMounted(async () => {
       console.log('Fetching wishlist items...');
       await wishListStore.fetchWishListItems();
