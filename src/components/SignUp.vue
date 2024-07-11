@@ -2,7 +2,7 @@
   <div class="login-page">
     <div class="left-section">
       <div class="content-wrapper">
-        <img src="../../loginimage.png" alt="Online Book Shopping" class="shopping-image" />
+        <img src="/loginimage.png" alt="Online Book Shopping" class="shopping-image" />
         <h2>ONLINE BOOK SHOPPING</h2>
       </div>
     </div>
@@ -14,13 +14,13 @@
             <v-btn class="toggle-button" :class="{ active: !isLogin }" @click="isLogin = false">SIGNUP</v-btn>
           </v-btn-toggle>
         </div>
-        <v-form ref="form" v-slot="{ validate }">
+        <v-form ref="form">
           <div v-if="!isLogin">
             <div class="u-title">Full Name</div>
             <v-text-field
               v-model="fullName"
               class="u-input"
-              :rules="[v => !!v || 'Full Name is required']"
+              :rules="[(v:string) => !!v || 'Full Name is required']"
               density="compact"
               placeholder="Full Name"
               variant="outlined"
@@ -32,7 +32,7 @@
           <v-text-field
             v-model="email"
             class="u-input"
-            :rules="[v => !!v || 'Email is required', v => /.+@.+\..+/.test(v) || 'Email must be valid']"
+            :rules="[(v:string) => !!v || 'Email is required', (v:string) => /.+@.+\..+/.test(v) || 'Email must be valid']"
             density="compact"
             placeholder="Email address"
             variant="outlined"
@@ -44,7 +44,7 @@
             v-model="password"
             :append-inner-icon="visible ? 'mdi-eye-off' : 'mdi-eye'"
             :type="visible ? 'text' : 'password'"
-            :rules="[v => !!v || 'Password is required', v => v.length >= 6 || 'Password must be at least 6 characters']"
+            :rules="[(v:string) => !!v || 'Password is required', (v: string | any[]) => v.length >= 6 || 'Password must be at least 6 characters']"
             density="compact"
             placeholder="Enter your password"
             variant="outlined"
@@ -57,7 +57,7 @@
             v-if="!isLogin"
             v-model="mobileNo"
             class="u-input"
-            :rules="[v => !!v || 'Mobile number is required', v => /^\d+$/.test(v) || 'Mobile number must be valid']"
+            :rules="[(v:string) => !!v || 'Mobile number is required', (v: string) => /^\d+$/.test(v) || 'Mobile number must be valid']"
             density="compact"
             placeholder="Mobile Number"
             variant="outlined"
@@ -126,7 +126,8 @@ export default defineComponent({
     },
 
     validateAndSubmit() {
-      this.$refs.form.validate().then(success => {
+      const form = this.$refs.form as { validate: () => Promise<boolean> }; 
+      form.validate().then((success) => {
         if (success) {
           this.handleSubmit();
         }
@@ -228,8 +229,6 @@ body {
   margin-bottom: 8px;
 }
 
-.u-passdiv {
-}
 
 .u-forgetpass {
   display: block;
@@ -255,8 +254,6 @@ body {
   color: #000000;
 }
 
-.social-login {
-}
 
 .u-btn {
   background-color: #a03037;
@@ -324,4 +321,4 @@ body {
     padding: 8px;
   }
 }
-</style>
+</style>(: any)(: any)(: any)(: any)(: string)(: any)(: string)(: any)(: string | any[])(: any)(: string | any[])(: any)(: string)(: any)(: string)

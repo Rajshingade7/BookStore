@@ -86,11 +86,12 @@
 import { ref } from 'vue'
 import Header from './Header.vue'
 import Footer from './Footer.vue'
-import UserService from '../Services/User.service'
 export default {
   name: 'UserProfile',
   components: {
+    // eslint-disable-next-line vue/no-reserved-component-names
     Header,
+    // eslint-disable-next-line vue/no-reserved-component-names
     Footer
   },
   setup() {

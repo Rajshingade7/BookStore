@@ -40,11 +40,7 @@ const router = createRouter({
       component: BookDetails,
       props: true
     },
-    {
-      path: '/newcomponent',
-      name: 'newcomponent',
-      component: () => import('../components/newComponent.vue')
-    },
+    
     {
       path: '/order-confirmation',
       name: 'OrderConfirmation',

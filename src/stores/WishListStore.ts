@@ -11,7 +11,7 @@ export const useWishListStore = defineStore('wishList', {
         console.log('Calling API to fetch wishlist items...')
         const response = await Get('/bookstore_user/get_wishlist_items')
         console.log('API response:', response.data.result)
-        this.wishListItems = response.data.result.filter(item => item.product_id)
+        this.wishListItems = response.data.result.filter((item: { product_id: any }) => item.product_id)
 
       } catch (error) {
         console.error('Error fetching wishlist items:', error)

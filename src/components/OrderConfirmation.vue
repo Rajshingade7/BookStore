@@ -1,5 +1,5 @@
 <template>
-    <Header/>
+    <Header searchQuery=""/>
     <div class="order-confirmation">
       <div class="success-message">
         <img src="/public/image2.png" alt="Order Success" class="success-image" />
@@ -36,7 +36,9 @@
   export default defineComponent({
     name: 'OrderConfirmation',
     components: {
+      // eslint-disable-next-line vue/no-reserved-component-names
       Header,
+      // eslint-disable-next-line vue/no-reserved-component-names
       Footer,
     },
     setup() {

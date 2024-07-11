@@ -1,5 +1,5 @@
 <template>
-  <Headercomponent />
+  <Headercomponent searchQuery="" />
   <v-container>
     <v-breadcrumbs :items="['Home', 'Book(01)']"></v-breadcrumbs>
     <div class="main">
@@ -16,9 +16,7 @@
         <div class="u-book-b">
           <div class="big-image">
             <img height="80%" width="80%" src="../../public/Image 11@2x.png" alt="" />
-            <!-- <div class="u-box-out-b position-absolute d-flex align-center justify-center">
-                <span><strong>OUT OF STOCK</strong></span>
-              </div> -->
+            
           </div>
         </div>
         <div class="btns">
@@ -125,7 +123,7 @@
         </div>
         <div
           class="feedback-item mt-8"
-          v-for="(feedback, index) in visibleFeedbacks"
+          v-for="(feedback) in visibleFeedbacks"
           :key="feedback.id"
         >
           <div class="avatar-wrapper">
@@ -168,14 +166,27 @@ import { useCartStore } from '../stores/CartStore'
 import { addToCart, removeFromCart, updateCartItem } from '../Services/Cart.service'
 import WishListService from '@/Services/WishListService.service'
 import { useWishListStore } from '@/stores/WishListStore'
+
 interface Feedback {
   id: string
   name: string
   initials: string
   rating: number
   comment: string
+  user_id: {
+    fullName: string;
+    _id:string;
+  };
 }
 
+interface Book {
+  _id: string
+  bookName: string
+  author: string
+  quantity: number
+  discountPrice: number
+  price: number
+}
 export default defineComponent({
   components: {
     Headercomponent
@@ -192,7 +203,7 @@ export default defineComponent({
     const review = ref('')
     const route = useRoute()
     const bookStore = useBookStore()
-    const book = ref(null)
+    const book = ref<Book >()
     const cartStore = useCartStore()
     const feedbacks = ref<Feedback[]>([])
     const showAllFeedbacks = ref<boolean>(false)
@@ -207,9 +218,10 @@ export default defineComponent({
     }
     const isInCart = computed(() => {
       if (!book.value || cartStore.cartItems.length === 0) return false
-      const cartItem = cartStore.cartItems.find((item) => item.product_id._id === book.value._id)
+      const cartItem = cartStore.cartItems.find((item: any) => item.product_id?._id === book.value?._id)
       console.log(cartItem)
       if (cartItem) {
+        // eslint-disable-next-line vue/no-side-effects-in-computed-properties
         cartQuantity.value = cartItem.quantityToBuy
         return true
       }
@@ -231,8 +243,7 @@ export default defineComponent({
             ...feedback,
             initials: getInitials(feedback.user_id.fullName)
           }))
-          const wishlistData = await WishListService.fetchWishlist()
-          wishlist.value = wishlistData.map(item => item.product_id._id) 
+         
         } catch (error) {
           console.error('Error fetching feedback:', error)
         }
@@ -273,7 +284,7 @@ export default defineComponent({
     const decrementQuantity = async () => {
       if (!book.value) return
 
-      const cartItem = cartStore.cartItems.find((item) => item.product_id._id === book.value._id)
+      const cartItem = cartStore.cartItems.find((item) => item.product_id._id === book.value?._id)
 
       if (cartItem) {
         if (cartQuantity.value > 1) {
@@ -301,7 +312,7 @@ export default defineComponent({
     const incrementQuantity = async () => {
       if (!book.value) return
 
-      const cartItem = cartStore.cartItems.find((item) => item.product_id._id === book.value._id)
+      const cartItem = cartStore.cartItems.find((item) => item.product_id._id === book.value?._id)
 
       if (cartItem && cartQuantity.value < book.value.quantity) {
         cartQuantity.value++
@@ -319,8 +330,10 @@ export default defineComponent({
     const submitReview = async () => {
       try {
         const bookId = route.params.id as string
+        console.log('Submitting review:', rating.value, review.value)
         const response = await setFeedback(bookId, { rating: rating.value, comment: review.value })
         console.log('Review submitted successfully:', response)
+        await bookStore.fetchBooks()
       } catch (error) {
         console.error('Error submitting review:', error)
       }
@@ -341,7 +354,9 @@ export default defineComponent({
       }
     })
     return {
+      // eslint-disable-next-line vue/no-dupe-keys
       rating,
+      // eslint-disable-next-line vue/no-dupe-keys
       review,
       book,
       feedbacks,
@@ -426,8 +441,8 @@ export default defineComponent({
   display: flex;
   align-items: center;
   justify-content: center;
-  top: 50%; /* Adjust position as needed */
-  left: 50%; /* Adjust position as needed */
+  top: 50%;
+  left: 50%;
   transform: translate(-50%, -50%);
 }
 .u-c-img-b {
@@ -462,11 +477,11 @@ export default defineComponent({
 }
 
 .mt-8 {
-  margin-top: 2rem; /* Adjust according to your spacing scale */
+  margin-top: 2rem; 
 }
 
 .avatar-wrapper {
-  margin-right: 16px; /* Adjust the gap as needed */
+  margin-right: 16px; 
 }
 
 .content-wrapper {
@@ -514,25 +529,25 @@ export default defineComponent({
   align-items: center;
 }
 .v-btn {
-  margin-right: 10px; /* Adjust spacing between buttons */
+  margin-right: 10px; 
 }
 
 .v-btn.error {
-  color: white; /* Text color for the Remove button */
-  background-color: #f44336; /* Background color for the Remove button */
+  color: white; 
+  background-color: #f44336;
 }
 
 .v-btn.error:hover {
-  background-color: #b71c1c; /* Darker background color on hover for Remove button */
+  background-color: #b71c1c;
 }
 
 .v-btn.primary {
-  color: white; /* Text color for the Add button */
-  background-color: #2196f3; /* Background color for the Add button */
+  color: white; 
+  background-color: #2196f3; 
 }
 
 .v-btn.primary:hover {
-  background-color: #0d47a1; /* Darker background color on hover for Add button */
+  background-color: #0d47a1;
 }
 @media only screen and (max-width: 600px) {
   .u-flex-book {

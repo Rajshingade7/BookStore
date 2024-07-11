@@ -1,4 +1,4 @@
-import { Post, Delete,Get } from "./Axios.service"
+import { Post, Delete } from "./Axios.service"
 
 const addwishlist = async (bookId: string) => {
   try {

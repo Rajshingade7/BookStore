@@ -208,6 +208,7 @@ export default defineComponent({
 
   .search-bar {
     margin: 0.5rem 0;
+    display: none;
   }
 
   .icon-label {

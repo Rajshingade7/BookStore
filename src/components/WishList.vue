@@ -1,6 +1,6 @@
 
 <template>
-  <Header></Header>
+  <Headers :searchQuery="''"></Headers>
   <div class="wishlist">
     <div class="breadcrumb">
       <span>Home</span> / <span>My Wishlist</span>
@@ -39,14 +39,17 @@
 import { defineComponent, ref, onMounted, computed } from 'vue';
 import { useWishListStore } from '../stores/WishListStore'; // Adjust the path according to your project structure
 import axios from 'axios';
-import Header from './Header.vue';
+import Headers from './Header.vue';
 import Footer from './Footer.vue';
 
 export default defineComponent({
   components: {
-    Header,
+    // eslint-disable-next-line vue/no-reserved-component-names
+    Headers,
+    // eslint-disable-next-line vue/no-reserved-component-names
     Footer,
   },
+  // eslint-disable-next-line vue/multi-word-component-names
   name: 'Wishlist',
   setup() {
     const wishListStore = useWishListStore();

@@ -1,5 +1,7 @@
+<!-- eslint-disable vue/multi-word-component-names -->
+// eslint-disable-next-line vue/multi-word-component-names
 <template>
-  <Header class="headercomponent" />
+  <Header class="headercomponent" :searchQuery="''" />
 
   <div class="cart">
     <v-breadcrumbs :items="['Home', 'My cart']"></v-breadcrumbs>
@@ -125,6 +127,8 @@
   <Footer />
 </template>
 
+
+
 <script lang="ts">
 import { defineComponent, ref, computed } from 'vue'
 import { useCartStore } from '../stores/CartStore'
@@ -132,9 +136,49 @@ import Header from './Header.vue'
 import Footer from './Footer.vue'
 import { useRouter } from 'vue-router'
 import { removeFromCart } from '../Services/Cart.service'
+
+interface User {
+  address: Address[];
+  createdAt: string;
+  email: string;
+  fullName: string;
+  isVerified: boolean;
+  phone: string;
+  updatedAt: string;
+  __v: number;
+  _id: string;
+}
+
+interface Address {
+  fullAddress: string;
+  city: string;
+  state: string;
+  addressType: string;
+}
+
+interface Product {
+  bookName: string;
+  author: string;
+  discountPrice: number;
+  price: number;
+  quantity: number;
+  // other product fields if any
+}
+
+interface CartItem {
+  user_id: User | undefined
+  product_id: Product;
+  admin_user_id: string;
+  quantityToBuy: number;
+  _id: string;
+  // other cart item fields if any
+}
+
 export default defineComponent({
   components: {
+    // eslint-disable-next-line vue/no-reserved-component-names
     Header,
+    // eslint-disable-next-line vue/no-reserved-component-names
     Footer
   },
   setup() {
@@ -143,33 +187,33 @@ export default defineComponent({
     const showAddressDetails = ref(false)
     const showOrderSummary = ref(false)
 
-    const user = computed(() =>
-      cartStore.cartItems.length > 0 ? cartStore.cartItems[0].user_id : {}
+    const user = computed<User | undefined>(() =>
+      cartStore.cartItems.length > 0 ? (cartStore.cartItems[0] as unknown as CartItem).user_id : undefined
     )
-    const addresses = computed(() => user.value.address || [])
-    const fullName = ref(user.value.fullName || '')
-    const mobileNumber = ref(user.value.phone || '')
+    const addresses = computed<Address[]>(() => user.value?.address || [])
+    const fullName = ref(user.value?.fullName || '')
+    const mobileNumber = ref(user.value?.phone || '')
     const address = ref(addresses.value.length > 0 ? addresses.value[0].fullAddress : '')
     const city = ref(addresses.value.length > 0 ? addresses.value[0].city : '')
     const state = ref(addresses.value.length > 0 ? addresses.value[0].state : '')
     const type = ref(addresses.value.length > 0 ? addresses.value[0].addressType : 'Home')
-    const decrementQuantity = (item) => {
+
+    const decrementQuantity = (item: CartItem) => {
       if (item.quantityToBuy > 1) {
         item.quantityToBuy--
       }
     }
 
-    const incrementQuantity = (item) => {
+    const incrementQuantity = (item: CartItem) => {
       if (item.quantityToBuy < item.product_id.quantity) {
         item.quantityToBuy++
       }
     }
 
-    const removeItem = async (item) => {
-      console.log('Remove item', item._id);
-      await removeFromCart(item._id);
-      await cartStore.fetchCartItems();
-
+    const removeItem = async (item: CartItem) => {
+      console.log('Remove item', item._id)
+      await removeFromCart(item._id)
+      await cartStore.fetchCartItems()
     }
 
     const selectAddress = () => {
@@ -184,13 +228,14 @@ export default defineComponent({
       cartStore.selectAddress(selectedAddress)
       showOrderSummary.value = true
     }
+
     const checkout = () => {
       console.log('Checkout with', cartStore.cartItems, cartStore.selectedAddress)
       router.push('/order-confirmation')
     }
 
     return {
-      cartItems: computed(() => cartStore.cartItems),
+      cartItems: computed(() => cartStore.cartItems as unknown as CartItem[]),
       showAddressDetails,
       showOrderSummary,
       fullName,
@@ -208,7 +253,6 @@ export default defineComponent({
   }
 })
 </script>
-
 <style scoped>
 .cart-item,
 .order-item {

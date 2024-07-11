@@ -14,7 +14,7 @@ export const Get = (url:any, config={}) => {
     try {
         const token=localStorage.getItem('token');
         const headers={
-            ...config.headers,
+            
             'x-access-token':token
         }
         return axios.get(BASE_URL + url, {...config,headers});
@@ -27,7 +27,7 @@ export const Delete = (url:any, config={}) => {
     try {
         const token=localStorage.getItem('token');
         const headers={
-            ...config.headers,
+            
             'x-access-token':token
         }
         return axios.delete(BASE_URL + url, {...config,headers});

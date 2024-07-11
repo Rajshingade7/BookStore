@@ -233,7 +233,6 @@ main {
   .books1 {
     padding: 0rem 12.5rem;
   }
-
   .books {
     padding: 0rem 8rem;
   }

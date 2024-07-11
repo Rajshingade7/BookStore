@@ -2,7 +2,7 @@
   <div class="login-page">
     <div class="left-section">
       <div class="content-wrapper">
-        <img src="../../loginimage.png" alt="Online Book Shopping" class="shopping-image" />
+        <img src="/loginimage.png" alt="Online Book Shopping" class="shopping-image" />
         <h2>ONLINE BOOK SHOPPING</h2>
       </div>
     </div>
@@ -79,7 +79,6 @@
 <script lang="ts">
 import { defineComponent } from 'vue'
 import UserService from '../Services/User.service'
-import router from '../router'
 export default defineComponent({
   name: 'LoginPage',
   data() {
@@ -104,7 +103,7 @@ export default defineComponent({
             this.$router.push({ name: 'dashboard' })
           }
         } catch (error) {
-          console.error('Error:', error.response ? error.response.data : error.message)
+          console.error('Error:', (error as any).response ? (error as any).response.data : (error as any).message)
         }
       } else {
       console.log('Please enter email and password')

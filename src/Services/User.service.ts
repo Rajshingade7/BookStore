@@ -1,5 +1,4 @@
 import { Post } from './Axios.service'
-import axios from 'axios'
 class UserService {
   loginUser(reqData: any) {
     console.log(reqData)
@@ -39,12 +38,7 @@ class UserService {
       throw error
     }
   }
-  async updateProfile(profileData: any) {
-    return axios.put(`${API_URL}/profile`, profileData)
-  }
-  async updateAddress(addressData: any) {
-    return axios.put(`${API_URL}/address`, addressData)
-  }
+ 
 }
 
 export default new UserService()
