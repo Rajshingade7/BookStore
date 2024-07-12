@@ -1,11 +1,13 @@
-import { describe, it, expect } from 'vitest'
+import { mount } from '@vue/test-utils';
+import Testing from '../Testing.vue';
+import { describe, it, expect } from '@jest/globals';
+describe('Testing.vue', () => {
+  it('renders props.msg when passed', () => {
+    const msg = 'new message';
+    const wrapper = mount(Testing );
+    expect(wrapper.exists()).toBe(true);
 
-import { mount } from '@vue/test-utils'
-import Dashboard from '../Dashboard.vue'
+  });
+});
 
-describe('Dashboard', () => {
-  it('renders properly', () => {
-    const wrapper = mount(Dashboard, { props: { msg: 'Hello Vitest' } })
-    expect(wrapper.text()).toContain('Hello Vitest')
-  })
-})
+

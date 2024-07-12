@@ -1,14 +1,14 @@
 import { Post } from './Axios.service'
 class UserService {
-  loginUser(reqData: any) {
-    console.log(reqData)
-    const url = 'bookstore_user/login'
+  async loginUser(reqData: any) {
+    console.log(reqData);
+    const url = 'bookstore_user/login';
     const headersOptions = {
       headers: {
         'Content-Type': 'application/json',
         Authorization: 'token'
       }
-    }
+    };
     return Post(url, reqData, headersOptions)
       .then((response) => {
         const token = response.data.result.accessToken
@@ -19,7 +19,7 @@ class UserService {
       .catch((error) => {
         console.error('Login failed', error)
         throw error
-      })
+      });
   }
   signupUser(reqData: any) {
     console.log(reqData)

@@ -80,7 +80,7 @@
 import { defineComponent } from 'vue'
 import UserService from '../Services/User.service'
 export default defineComponent({
-  name: 'LoginPage',
+  name: 'Login',
   data() {
     return {
       isLogin: true,
