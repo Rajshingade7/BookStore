@@ -18,7 +18,6 @@ export default defineComponent({
   background-color: black;
   color: white;
   text-align: left;
-  padding: 0.2rem 12rem;
 }
 @media (min-width: 768px) {
   .footer {

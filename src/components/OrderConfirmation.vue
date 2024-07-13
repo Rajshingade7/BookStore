@@ -66,7 +66,6 @@
   }
   
   .success-image {
-    width: 150px;
     margin-bottom: 1rem;
   }
   
@@ -85,7 +84,7 @@
   
   .contact-info th,
   .contact-info td {
-    padding: 1rem;
+    padding: 1rem 0rem;
     border: 1px solid #ddd;
   }
   
@@ -93,7 +92,6 @@
     background-color: #f2f2f2;
   }
   .success-image{
-    width:400px;
     height: auto;
   }
 

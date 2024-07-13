@@ -91,7 +91,9 @@ export default defineComponent({
 
 <style scoped>
 .wishlist {
-  padding: 2rem 12rem;
+  padding: 1rem;
+  max-width: 1200px;
+  margin: 0 auto;
 
 }
 

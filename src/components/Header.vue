@@ -202,17 +202,18 @@ export default defineComponent({
 }
 
 @media (max-width: 480px) {
-  .header {
-    padding: 0.3rem 1rem;
+ 
+  .logo{
+    margin:20px;
   }
-
   .search-bar {
     margin: 0.5rem 0;
-    display: none;
+    width:auto;
+    
   }
 
-  .icon-label {
-    display: none;
-  }
+  .profile-cart {
+    width: 100%;
+    justify-content: space-between;}
 }
 </style>

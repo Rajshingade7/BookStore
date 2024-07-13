@@ -86,7 +86,7 @@ export default defineComponent({
           ({{ filteredBooks.length }} Items)
         </div>
         <div>
-          <v-container>
+          <v-container style="padding-right: 0;">
             <select v-model="sortOption" class="sortbyrelevance">
               <option value="Sort By relevance">Sort By Relevance</option>
               <option value="lowToHigh">Price: Low to High</option>
@@ -137,13 +137,13 @@ export default defineComponent({
   display: flex;
   justify-content: space-between;
   width: 100vw;
-  padding: 0rem 12.5rem;
 }
 .books2 {
   display: flex;
   align-items: center;
   gap: 10px;
 }
+
 main {
   flex: 1;
   display: flex;
@@ -161,7 +161,6 @@ main {
   display: flex;
   flex-wrap: wrap;
   justify-content: center;
-  padding: 0rem 8rem;
 }
 .pagination {
   display: flex;
